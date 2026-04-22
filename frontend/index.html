@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outil BDDe · GT AREP</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<style>
+:root {
+  --bg: #f4f2ee; --bg-card: #ffffff; --bg-soft: #faf8f4;
+  --ink: #14171c; --ink-2: #3d434d; --ink-3: #737a85; --ink-4: #a8adb5;
+  --rule: #e4e1da; --rule-2: #edebe4;
+  --accent: #b8442e; --accent-2: #8a2e1e; --accent-soft: #e8b6a8; --accent-tint: #fdf3ef;
+  --blue: #2f5f8a; --blue-soft: #b9d0e3;
+  --gauge-low: #c14b32; --gauge-mid: #d8983a; --gauge-high: #587a4c;
+  --gauge-track: #ece8df;
+  --radar-fill: rgba(184, 68, 46, 0.15); --radar-stroke: #b8442e;
+  --radar-compare-fill: rgba(47, 95, 138, 0.12); --radar-compare-stroke: #2f5f8a;
+  --shadow-sm: 0 1px 2px rgba(20,23,28,.04);
+  --shadow-md: 0 2px 8px rgba(20,23,28,.06), 0 1px 2px rgba(20,23,28,.03);
+  --font-ui: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Segoe UI", Consolas, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{background:var(--bg);background-image:radial-gradient(rgba(20,23,28,.035) 1px,transparent 1px);background-size:22px 22px;color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.5;letter-spacing:-.005em}
+.container{max-width:1280px;margin:0 auto;padding:0 36px}
+
+/* Header */
+header.site{position:sticky;top:0;z-index:100;background:rgba(244,242,238,.92);backdrop-filter:saturate(180%) blur(12px);-webkit-backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--rule)}
+.site-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:24px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:18px}
+.brand-logo{display:flex;align-items:center;gap:8px;font-size:22px;font-weight:800;letter-spacing:.02em;color:var(--ink);text-decoration:none}
+.brand-logo-accent{display:inline-block;width:9px;height:22px;background:var(--accent);border-radius:1.5px}
+.brand-divider{width:1px;height:26px;background:var(--rule)}
+.brand-product-name{font-size:14px;font-weight:600;color:var(--ink)}
+.brand-product-name em{font-style:normal;color:var(--accent);font-weight:700}
+.brand-product-sub{font-size:11px;color:var(--ink-3);font-weight:500;letter-spacing:.01em}
+.meta-right{display:flex;align-items:center;gap:14px;font-size:12px;color:var(--ink-3)}
+.status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gauge-high);margin-right:6px;box-shadow:0 0 0 3px rgba(88,122,76,.15)}
+.meta-right .tag{padding:4px 10px;background:var(--bg-card);border:1px solid var(--rule);border-radius:100px;font-size:11px;font-weight:500}
+
+/* Backend config */
+.backend-config{margin-top:18px;padding:14px 18px;background:#fff8e8;border:1px solid #f0d090;border-radius:8px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:13px}
+.backend-config label{font-weight:600;color:var(--ink-2);white-space:nowrap}
+.backend-config input{flex:1;min-width:280px;padding:8px 11px;border:1px solid var(--rule);border-radius:5px;font-family:var(--font-mono);font-size:12px}
+.backend-config button{padding:8px 16px;background:var(--ink);color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600}
+.backend-config button:hover{background:var(--accent)}
+.backend-config .pill-state{padding:3px 9px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:.03em}
+.pill-state.live{background:rgba(88,122,76,.15);color:var(--gauge-high)}
+.pill-state.off{background:rgba(193,75,50,.12);color:var(--gauge-low)}
+
+/* Hero */
+.hero{padding:60px 0 30px;max-width:920px;position:relative}
+.hero::before{content:"";position:absolute;top:60px;left:-36px;width:3px;height:56px;background:var(--accent);border-radius:2px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:22px}
+.hero-eyebrow::before{content:"";width:28px;height:1px;background:var(--accent)}
+h1.hero-title{font-size:46px;font-weight:300;line-height:1.05;letter-spacing:-.025em;color:var(--ink)}
+h1.hero-title strong{font-weight:600}
+h1.hero-title em{font-style:normal;background:linear-gradient(180deg,transparent 62%,var(--accent-tint) 62%);padding:0 4px;color:var(--ink)}
+.hero-sub{margin-top:18px;max-width:700px;font-size:16px;color:var(--ink-2);line-height:1.55}
+.hero-sub strong{font-weight:600;color:var(--ink)}
+
+/* Selector */
+.selector-wrap{margin-top:34px;display:flex;flex-direction:column;gap:14px}
+.selector{display:flex;background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.selector-label{padding:18px 22px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;border-right:1px solid var(--rule);display:flex;align-items:center;background:var(--bg-soft);min-width:170px}
+.pills{display:flex;flex:1;min-width:0;overflow-x:auto}
+.pill{flex:1;min-width:140px;padding:16px 18px;background:transparent;border:none;border-right:1px solid var(--rule-2);font-family:var(--font-ui);font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;text-align:left;position:relative;transition:background .18s,color .18s}
+.pill:last-child{border-right:none}
+.pill:hover:not(.active){background:var(--bg-soft);color:var(--ink)}
+.pill.active{background:var(--ink);color:var(--bg-card)}
+.pill.active::after{content:"";position:absolute;left:18px;bottom:6px;width:20px;height:2px;background:var(--accent)}
+.pill-sub{display:block;font-size:11px;font-weight:400;color:inherit;opacity:.65;margin-top:2px}
+.aux-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--ink-3)}
+.aux-controls input[type=text]{flex:1;max-width:420px;min-width:200px;padding:9px 13px;border:1px solid var(--rule);background:var(--bg-card);font-family:var(--font-mono);font-size:12px;border-radius:6px;color:var(--ink-2)}
+.aux-controls input[type=text]:focus{outline:1px solid var(--accent);color:var(--ink)}
+.aux-controls button{padding:9px 18px;background:var(--ink);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500}
+.aux-controls button:hover{background:var(--accent)}
+.btn-compare{background:transparent;border:1px solid var(--ink);color:var(--ink);padding:8px 16px;cursor:pointer;font-size:13px;font-weight:500;border-radius:6px;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+.btn-compare:hover{background:var(--ink);color:var(--bg-card)}
+.btn-compare.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-compare.active:hover{background:#264b6e}
+.compare-bar{display:none;margin-top:4px;padding:12px 18px;background:var(--ink);color:var(--bg-card);border-radius:8px;align-items:center;gap:14px;font-size:13px}
+.compare-bar.on{display:flex}
+.compare-bar .ref{color:var(--blue-soft);font-weight:600}
+.compare-bar select{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);color:#fff;padding:5px 10px;font-size:12px;border-radius:5px;font-family:var(--font-ui);cursor:pointer}
+.compare-bar select option{color:var(--ink);background:var(--bg-card)}
+.compare-bar .close-btn{margin-left:auto;background:transparent;border:none;color:var(--bg-card);cursor:pointer;font-size:14px;opacity:.7}
+
+/* Territory */
+.t-view{margin-top:48px;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.t-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:stretch;padding-bottom:36px;border-bottom:1px solid var(--rule)}
+.t-title-wrap{display:flex;flex-direction:column;justify-content:space-between}
+.t-kicker{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600;display:flex;align-items:center;gap:12px}
+.t-kicker .siren-code{font-family:var(--font-mono);color:var(--ink-4);font-weight:500;padding:2px 8px;background:var(--bg-soft);border:1px solid var(--rule);border-radius:4px;text-transform:none}
+h2.t-title{font-size:48px;font-weight:300;letter-spacing:-.03em;line-height:1.02;margin-top:14px}
+h2.t-title strong{font-weight:600}
+.t-meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+.t-meta-item{padding:16px 18px;background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;position:relative;overflow:hidden}
+.t-meta-item::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .25s}
+.t-meta-item:hover::before{transform:scaleY(1)}
+.t-meta-label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.t-meta-val{font-size:24px;font-weight:600;color:var(--ink);margin-top:4px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.t-meta-val .unit{font-size:12px;color:var(--ink-3);font-weight:400;margin-left:4px}
+.t-meta-src{font-size:9px;color:var(--gauge-high);margin-top:4px;letter-spacing:.05em;font-weight:600;text-transform:uppercase}
+.t-meta-src.demo{color:var(--ink-4)}
+.t-narrative{margin-top:20px;font-size:15px;color:var(--ink-2);line-height:1.55;font-style:italic}
+
+/* Map */
+.t-map-wrap{position:relative;background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-md);min-height:380px}
+.t-map{width:100%;height:100%;min-height:380px;background:var(--bg-soft)}
+.leaflet-container{background:var(--bg-soft);font-family:var(--font-ui) !important}
+.t-map-overlay{position:absolute;bottom:0;left:0;right:0;padding:12px 16px;pointer-events:none;background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,.95) 50%,#fff 100%);display:flex;justify-content:space-between;align-items:flex-end;z-index:500}
+.t-map-label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.t-map-src{font-size:10px;color:var(--ink-4);font-family:var(--font-mono)}
+.t-map-loader{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--ink-3);z-index:1000;display:flex;align-items:center;gap:8px}
+
+/* Synthesis */
+.synthesis{margin-top:36px;display:grid;grid-template-columns:1fr 1.25fr;gap:28px;align-items:stretch}
+.synth-score-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;padding:26px 28px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.synth-score-card::after{content:"";position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,var(--accent-tint) 0%,transparent 70%);pointer-events:none}
+.synth-score-card>*{position:relative;z-index:1}
+.synth-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.synth-title{font-size:20px;font-weight:600;margin-top:10px;letter-spacing:-.01em}
+.synth-desc{font-size:13px;color:var(--ink-3);margin-top:6px;line-height:1.45}
+.synth-score-block{display:flex;align-items:baseline;gap:14px;margin-top:22px}
+.synth-score-val{font-size:60px;font-weight:200;letter-spacing:-.04em;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.synth-score-val .over{font-size:18px;color:var(--ink-3);font-weight:400}
+.synth-grade{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:.02em}
+.synth-grade::before{content:"";width:6px;height:6px;border-radius:50%}
+.grade-low{background:rgba(193,75,50,.1);color:var(--gauge-low)}
+.grade-low::before{background:var(--gauge-low)}
+.grade-mid{background:rgba(216,152,58,.12);color:#a67126}
+.grade-mid::before{background:var(--gauge-mid)}
+.grade-high{background:rgba(88,122,76,.12);color:var(--gauge-high)}
+.grade-high::before{background:var(--gauge-high)}
+.synth-compare{margin-top:14px;padding-top:14px;border-top:1px dashed var(--rule);font-size:13px;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center}
+.synth-compare-val{font-weight:600;color:var(--blue)}
+
+/* Radar */
+.radar-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;padding:26px 28px 18px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+.radar-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.radar-head-title{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.radar-head-sub{font-size:11px;color:var(--ink-3);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.radar-legend{display:flex;gap:16px;font-size:11px;color:var(--ink-3);align-items:center}
+.radar-legend .dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.radar-legend .dot.ref{background:var(--accent)}
+.radar-legend .dot.cmp{background:var(--blue)}
+.radar-svg-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:4px 0;min-height:280px}
+.radar-svg{max-width:100%;height:auto}
+
+/* Dims */
+.dims-section{margin-top:36px}
+.dims-section-title{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.dims-section-title h3{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.dims-section-title .meta{font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.dims{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.dim{background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;padding:22px 22px 20px;transition:transform .22s,box-shadow .22s,border-color .22s;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.dim::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background .22s}
+.dim:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:var(--ink-4)}
+.dim.grade-low:hover::before{background:var(--gauge-low)}
+.dim.grade-mid:hover::before{background:var(--gauge-mid)}
+.dim.grade-high:hover::before{background:var(--gauge-high)}
+.dim-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.dim-num{font-size:11px;font-weight:700;color:var(--ink-4);letter-spacing:.08em;font-family:var(--font-mono)}
+.dim-icon{width:38px;height:38px;border-radius:9px;background:var(--bg-soft);border:1px solid var(--rule-2);display:flex;align-items:center;justify-content:center;color:var(--ink-2);margin-top:4px}
+.dim-icon svg{width:20px;height:20px}
+.dim-score-block{text-align:right}
+.dim-score-label{font-size:10px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.dim-score-val{font-size:34px;font-weight:200;letter-spacing:-.03em;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.dim-score-val.na{color:var(--ink-4);font-size:22px}
+.dim-score-val .s{font-size:13px;color:var(--ink-4);font-weight:400}
+.dim h4{font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+.dim-synth{font-size:13px;color:var(--accent);font-weight:500;font-style:italic;margin-top:-6px}
+
+.gauge{margin:4px 0 2px}
+.gauge-track{height:5px;background:var(--gauge-track);border-radius:100px;position:relative}
+.gauge-fill{height:100%;border-radius:100px;transition:width .5s cubic-bezier(.4,0,.2,1);position:relative}
+.gauge-fill.low{background:linear-gradient(90deg,var(--gauge-low),#d8703a)}
+.gauge-fill.mid{background:linear-gradient(90deg,var(--gauge-low),var(--gauge-mid))}
+.gauge-fill.high{background:linear-gradient(90deg,var(--gauge-mid),var(--gauge-high))}
+.gauge-marker-cmp{position:absolute;top:-3px;width:2px;height:11px;background:var(--blue);transform:translateX(-1px);border-radius:1px}
+.gauge-scale{display:flex;justify-content:space-between;font-size:9px;color:var(--ink-4);margin-top:5px;font-family:var(--font-mono);font-weight:500}
+
+.dim-indicators{display:flex;flex-direction:column;margin-top:4px;border-top:1px solid var(--rule-2);padding-top:6px}
+.ind{display:grid;grid-template-columns:1fr auto;gap:12px;padding:6px 0;align-items:baseline;border-bottom:1px dashed var(--rule-2);font-size:13px}
+.ind:last-child{border-bottom:none}
+.ind-label{color:var(--ink-2);line-height:1.3}
+.ind-src{display:block;font-size:9px;color:var(--ink-4);letter-spacing:.06em;text-transform:uppercase;font-weight:500;margin-top:2px}
+.ind-val-wrap{text-align:right;white-space:nowrap}
+.ind-val{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.ind-val.na{color:var(--ink-4);font-weight:400;font-style:italic}
+.ind-cmp{display:block;font-size:11px;color:var(--blue);margin-top:2px;font-weight:500}
+
+/* Badge source */
+.src-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.04em;margin-left:6px;vertical-align:middle}
+.src-live{background:rgba(88,122,76,.15);color:var(--gauge-high)}
+.src-demo{background:rgba(168,173,181,.2);color:var(--ink-3)}
+.src-todo{background:rgba(216,152,58,.15);color:#a67126}
+
+/* Data-source legend */
+.data-legend{margin-top:20px;padding:12px 18px;background:var(--bg-soft);border:1px dashed var(--rule);border-radius:6px;font-size:12px;color:var(--ink-3);line-height:1.6}
+.data-legend strong{color:var(--ink)}
+
+/* Footer */
+footer.site-footer{margin-top:60px;padding:28px 0 36px;border-top:1px solid var(--rule);display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;font-size:12px;color:var(--ink-3)}
+.footer-mark{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink)}
+.footer-mark .a{width:6px;height:16px;background:var(--accent);border-radius:1px}
+.footer-version{justify-self:center;display:flex;align-items:center;gap:10px;padding:5px 12px;background:var(--bg-card);border:1px solid var(--rule);border-radius:100px;font-family:var(--font-mono);font-size:11px}
+.footer-version .vdot{width:6px;height:6px;border-radius:50%;background:var(--gauge-high)}
+.footer-meta{justify-self:end;font-size:11px}
+
+@media (max-width:980px){
+  .t-hero{grid-template-columns:1fr}
+  .synthesis{grid-template-columns:1fr}
+  .dims{grid-template-columns:repeat(2,1fr)}
+  h1.hero-title{font-size:36px}
+  h2.t-title{font-size:38px}
+}
+@media (max-width:640px){
+  .dims{grid-template-columns:1fr}
+  .t-meta-grid{grid-template-columns:1fr;gap:10px}
+  .container{padding:0 20px}
+  h1.hero-title{font-size:30px}
+  h2.t-title{font-size:30px}
+  footer.site-footer{grid-template-columns:1fr;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="container site-inner">
+    <div class="brand">
+      <a class="brand-logo" href="#"><span class="brand-logo-accent"></span>AREP</a>
+      <div class="brand-divider"></div>
+      <div class="brand-product">
+        <div class="brand-product-name">Outil <em>BDDe</em></div>
+        <div class="brand-product-sub">Diagnostic territorial multicritère</div>
+      </div>
+    </div>
+    <div class="meta-right">
+      <span id="backendStatus"><span class="status-dot"></span>Backend non configuré</span>
+      <span class="tag">V0.3 · avril 2026</span>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Backend config bar -->
+  <div class="backend-config">
+    <label>URL backend :</label>
+    <input type="url" id="backendUrl" placeholder="https://...-8000.app.github.dev (ou http://localhost:8000)">
+    <button id="btnSaveBackend">Enregistrer</button>
+    <span id="backendState" class="pill-state off">non connecté</span>
+  </div>
+
+  <section class="hero">
+    <div class="hero-eyebrow">GT BDDe · prototype interne</div>
+    <h1 class="hero-title">Objectiver le lien entre <em>organisation territoriale</em> et <em>dépendance automobile</em> à l'échelle de l'agglomération.</h1>
+    <p class="hero-sub">Outil de diagnostic multicritère connecté aux <strong>APIs officielles</strong> (INSEE Melodi, geo.api.gouv.fr) avec saisie manuelle des indicateurs de gouvernance. Les indicateurs non encore branchés sont marqués « démo ».</p>
+  </section>
+
+  <section class="selector-wrap">
+    <div class="selector">
+      <div class="selector-label">Territoire</div>
+      <div class="pills" id="pills"></div>
+    </div>
+    <div class="aux-controls">
+      <input type="text" id="codeLibre" placeholder="Ou saisir un code INSEE (5 chiffres) ou SIREN EPCI (9 chiffres)">
+      <button id="btnLoadLibre">Charger</button>
+      <button class="btn-compare" id="compareBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10M7 12h10M7 17h10"/></svg>
+        Comparer
+      </button>
+    </div>
+    <div class="compare-bar" id="compareBar">
+      <span>Comparaison avec <span class="ref" id="compareRef">–</span></span>
+      <select id="compareSelect"></select>
+      <button class="close-btn" id="closeCompare">✕ Fermer</button>
+    </div>
+  </section>
+
+  <section id="territoryView"></section>
+
+  <div class="data-legend">
+    <strong>Lecture des badges de source :</strong>
+    <span class="src-badge src-live">LIVE</span> donnée réelle calculée depuis une API officielle (pour l'instant : population, superficie, densité, contour).
+    <span class="src-badge src-demo">DÉMO</span> donnée illustrative héritée du prototype V0.2, conservée pour l'ergonomie en attendant le branchement des sources.
+    <span class="src-badge src-todo">À BRANCHER</span> source identifiée mais pas encore branchée (BPE, CITEPA, Filosofi, etc.).
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-mark"><span class="a"></span>AREP</div>
+    <div class="footer-version"><span class="vdot"></span>GT BDDe · V0.3 · avril 2026</div>
+    <div class="footer-meta">usage interne · prototype non diffusable</div>
+  </footer>
+
+</main>
+
+<script>
+// ============================================================
+// CONFIG BACKEND
+// ============================================================
+let BACKEND = localStorage.getItem("gtbdde_backend") || "";
+
+function setBackend(url) {
+  url = (url || "").trim().replace(/\/$/, "");
+  BACKEND = url;
+  if (url) localStorage.setItem("gtbdde_backend", url);
+  document.getElementById("backendUrl").value = url;
+  testBackend();
+}
+
+async function testBackend() {
+  const state = document.getElementById("backendState");
+  const status = document.getElementById("backendStatus");
+  if (!BACKEND) {
+    state.className = "pill-state off"; state.textContent = "non connecté";
+    status.innerHTML = '<span class="status-dot" style="background:#c14b32"></span>Backend non configuré';
+    return false;
+  }
+  try {
+    const r = await fetch(`${BACKEND}/`, {method: "GET"});
+    if (r.ok) {
+      state.className = "pill-state live"; state.textContent = "connecté";
+      status.innerHTML = '<span class="status-dot"></span>Backend connecté';
+      return true;
+    }
+  } catch (e) {}
+  state.className = "pill-state off"; state.textContent = "erreur connexion";
+  status.innerHTML = '<span class="status-dot" style="background:#c14b32"></span>Backend inaccessible';
+  return false;
+}
+
+document.getElementById("btnSaveBackend").onclick = () => {
+  setBackend(document.getElementById("backendUrl").value);
+  renderAll();
+};
+
+// ============================================================
+// DONNÉES DÉMO (héritées V0.2 — illustratives pour les 5 agglos)
+// Seuls les scores et indicateurs non-branchés sont en démo.
+// Pop/superficie/communes/densité viennent du backend.
+// ============================================================
+const TERRITORIES_DEMO = {
+  "241700434": {
+    name: "CA de La Rochelle", kind: "Communauté d'Agglomération", centerName: "La Rochelle",
+    narrative: "Territoire littoral polycentrique compact. 70 % de l'habitat et 70 % des équipements dans un rayon de 1,5 km des centralités scolaires. Cas pilote de la méthodologie GT BDDe.",
+    synth: {score: 72, grade: "high", label: "Organisation compacte", desc: "Maillage dense et polycentralité qui limitent les distances domicile-équipements."},
+    dims: {
+      struct: {score: 74, indicators: [
+        {label:"Artificialisation / habitant", val:"398 m²/hab", src:"IGN OCS GE", status:"todo"},
+        {label:"Indice de dispersion habitat", val:"0,34", src:"Calcul AREP", status:"demo"}
+      ]},
+      access: {score: 81, indicators: [
+        {label:"Pop. < 1,5 km d'un équipement scolaire", val:"84 %", src:"BPE 2024", status:"todo"},
+        {label:"Équipements quotidien / 10 000 hab", val:"62", src:"BPE 2024", status:"todo"},
+        {label:"Pop. < 500 m d'un arrêt TC", val:"71 %", src:"GTFS / OSM", status:"todo"}
+      ]},
+      mob: {score: 58, indicators: [
+        {label:"Part modale voiture (D-T)", val:"68 %", src:"INSEE 2021", status:"todo"},
+        {label:"Taux de motorisation", val:"1,24 v/mén.", src:"INSEE 2021", status:"todo"},
+        {label:"Distance moyenne D-T", val:"9,2 km", src:"INSEE 2021", status:"todo"}
+      ]},
+      env: {score: 69, indicators: [
+        {label:"Émissions transport / habitant", val:"1,9 tCO₂eq", src:"CITEPA 2022", status:"todo"},
+        {label:"PRG territorial / habitant", val:"6,1 tCO₂eq", src:"PCAET", status:"todo"},
+        {label:"Conso. énergétique transport", val:"0,42 tep/hab", src:"PCAET", status:"todo"}
+      ]},
+      socio: {score: 63, indicators: [
+        {label:"Revenu médian", val:"23 400 €", src:"INSEE Filosofi", status:"todo"},
+        {label:"Part emplois dans l'EPCI", val:"76 %", src:"INSEE", status:"todo"},
+        {label:"Actifs travaillant dans leur aire", val:"82 %", src:"INSEE", status:"todo"}
+      ]},
+      gouv: {score: 85, indicators: [
+        {label:"Plan vélo structurant", val:"À remplir", src:"CDA", status:"todo"},
+        {label:"Budget mobilité / habitant", val:"À remplir", src:"Compte admin.", status:"todo"},
+        {label:"PCAET adopté", val:"À remplir", src:"ADEME", status:"todo"}
+      ]}
+    }
+  },
+  "200067213": {
+    name: "Grand Reims", kind: "Communauté Urbaine", centerName: "Reims",
+    narrative: "Monocentre dense entouré d'un vaste hinterland rural. Contraste fort entre l'urbain rémois et les marges périurbaines. EPCI très hétérogène, qui questionne la pertinence d'un score agrégé.",
+    synth: {score: 54, grade: "mid", label: "Contraste cœur / marges", desc: "Performance du cœur rémois diluée par l'étendue rurale de l'EPCI."},
+    dims: { /* idem structure */
+      struct: {score: 46, indicators: [{label:"Artificialisation / habitant", val:"612 m²/hab", src:"IGN OCS GE", status:"todo"},{label:"Indice de dispersion habitat", val:"0,58", src:"Calcul AREP", status:"demo"}]},
+      access: {score: 51, indicators: [{label:"Pop. < 1,5 km équipement scolaire", val:"63 %", src:"BPE 2024", status:"todo"},{label:"Équipements quotidien / 10 000 hab", val:"48", src:"BPE 2024", status:"todo"},{label:"Pop. < 500 m d'un arrêt TC", val:"54 %", src:"GTFS / OSM", status:"todo"}]},
+      mob: {score: 44, indicators: [{label:"Part modale voiture (D-T)", val:"74 %", src:"INSEE 2021", status:"todo"},{label:"Taux de motorisation", val:"1,31 v/mén.", src:"INSEE 2021", status:"todo"},{label:"Distance moyenne D-T", val:"13,6 km", src:"INSEE 2021", status:"todo"}]},
+      env: {score: 52, indicators: [{label:"Émissions transport / habitant", val:"2,4 tCO₂eq", src:"CITEPA 2022", status:"todo"},{label:"PRG territorial / habitant", val:"7,8 tCO₂eq", src:"PCAET", status:"todo"},{label:"Conso. énergétique transport", val:"0,54 tep/hab", src:"PCAET", status:"todo"}]},
+      socio: {score: 59, indicators: [{label:"Revenu médian", val:"22 100 €", src:"INSEE Filosofi", status:"todo"},{label:"Part emplois dans l'EPCI", val:"84 %", src:"INSEE", status:"todo"},{label:"Actifs travaillant dans leur aire", val:"79 %", src:"INSEE", status:"todo"}]},
+      gouv: {score: 72, indicators: [{label:"Plan vélo structurant", val:"À remplir", src:"Grand Reims", status:"todo"},{label:"Budget mobilité / habitant", val:"À remplir", src:"Compte admin.", status:"todo"},{label:"PCAET adopté", val:"À remplir", src:"ADEME", status:"todo"}]}
+    }
+  },
+  "200067106": {
+    name: "CA Pays Basque", kind: "Communauté d'Agglomération", centerName: "Bayonne",
+    narrative: "Territoire à double logique : conurbation littorale Bayonne-Anglet-Biarritz et intérieur rural morcelé en pôles secondaires. Le plus vaste EPCI de France en nombre de communes.",
+    synth: {score: 49, grade: "mid", label: "Territoire hétérogène", desc: "Coexistence d'une conurbation littorale dense et d'un intérieur morcelé."},
+    dims: {
+      struct: {score: 42, indicators: [{label:"Artificialisation / habitant", val:"487 m²/hab", src:"IGN OCS GE", status:"todo"},{label:"Indice de dispersion habitat", val:"0,71", src:"Calcul AREP", status:"demo"}]},
+      access: {score: 54, indicators: [{label:"Pop. < 1,5 km équipement scolaire", val:"66 %", src:"BPE 2024", status:"todo"},{label:"Équipements quotidien / 10 000 hab", val:"55", src:"BPE 2024", status:"todo"},{label:"Pop. < 500 m d'un arrêt TC", val:"48 %", src:"GTFS Txik Txak", status:"todo"}]},
+      mob: {score: 38, indicators: [{label:"Part modale voiture (D-T)", val:"77 %", src:"INSEE 2021", status:"todo"},{label:"Taux de motorisation", val:"1,42 v/mén.", src:"INSEE 2021", status:"todo"},{label:"Distance moyenne D-T", val:"14,8 km", src:"INSEE 2021", status:"todo"}]},
+      env: {score: 44, indicators: [{label:"Émissions transport / habitant", val:"2,7 tCO₂eq", src:"CITEPA 2022", status:"todo"},{label:"PRG territorial / habitant", val:"8,2 tCO₂eq", src:"PCAET", status:"todo"},{label:"Conso. énergétique transport", val:"0,58 tep/hab", src:"PCAET", status:"todo"}]},
+      socio: {score: 61, indicators: [{label:"Revenu médian", val:"22 800 €", src:"INSEE Filosofi", status:"todo"},{label:"Part emplois dans l'EPCI", val:"91 %", src:"INSEE", status:"todo"},{label:"Actifs travaillant dans leur aire", val:"86 %", src:"INSEE", status:"todo"}]},
+      gouv: {score: 64, indicators: [{label:"Plan vélo structurant", val:"À remplir", src:"SMPB-A", status:"todo"},{label:"Budget mobilité / habitant", val:"À remplir", src:"Compte admin.", status:"todo"},{label:"PCAET adopté", val:"À remplir", src:"ADEME", status:"todo"}]}
+    }
+  },
+  "245804406": {
+    name: "Nevers Agglomération", kind: "Communauté d'Agglomération", centerName: "Nevers",
+    narrative: "Petite agglo de centre-France : cœur urbain contracté et ceinture périurbaine diffuse. Cas typique d'une dépendance automobile forte malgré une taille modeste.",
+    synth: {score: 38, grade: "low", label: "Forte dépendance automobile", desc: "Dispersion de l'habitat, faible densité d'équipements et politiques mobilité embryonnaires."},
+    dims: {
+      struct: {score: 35, indicators: [{label:"Artificialisation / habitant", val:"698 m²/hab", src:"IGN OCS GE", status:"todo"},{label:"Indice de dispersion habitat", val:"0,62", src:"Calcul AREP", status:"demo"}]},
+      access: {score: 42, indicators: [{label:"Pop. < 1,5 km équipement scolaire", val:"58 %", src:"BPE 2024", status:"todo"},{label:"Équipements quotidien / 10 000 hab", val:"44", src:"BPE 2024", status:"todo"},{label:"Pop. < 500 m d'un arrêt TC", val:"39 %", src:"GTFS / OSM", status:"todo"}]},
+      mob: {score: 28, indicators: [{label:"Part modale voiture (D-T)", val:"83 %", src:"INSEE 2021", status:"todo"},{label:"Taux de motorisation", val:"1,48 v/mén.", src:"INSEE 2021", status:"todo"},{label:"Distance moyenne D-T", val:"11,4 km", src:"INSEE 2021", status:"todo"}]},
+      env: {score: 34, indicators: [{label:"Émissions transport / habitant", val:"3,1 tCO₂eq", src:"CITEPA 2022", status:"todo"},{label:"PRG territorial / habitant", val:"8,9 tCO₂eq", src:"PCAET", status:"todo"},{label:"Conso. énergétique transport", val:"0,66 tep/hab", src:"PCAET", status:"todo"}]},
+      socio: {score: 48, indicators: [{label:"Revenu médian", val:"21 200 €", src:"INSEE Filosofi", status:"todo"},{label:"Part emplois dans l'EPCI", val:"88 %", src:"INSEE", status:"todo"},{label:"Actifs travaillant dans leur aire", val:"81 %", src:"INSEE", status:"todo"}]},
+      gouv: {score: 41, indicators: [{label:"Plan vélo structurant", val:"À remplir", src:"Nevers Agglo", status:"todo"},{label:"Budget mobilité / habitant", val:"À remplir", src:"Compte admin.", status:"todo"},{label:"PCAET adopté", val:"À remplir", src:"ADEME", status:"todo"}]}
+    }
+  },
+  "200067932": {
+    name: "Golfe du Morbihan – Vannes", kind: "Communauté d'Agglomération", centerName: "Vannes",
+    narrative: "Agglo littorale attractive : cœur vannetais dense, arc littoral structuré et intérieur rural préservé. Profil intermédiaire, à la croisée des cas La Rochelle et Pays Basque.",
+    synth: {score: 58, grade: "mid", label: "Profil intermédiaire", desc: "Bonnes performances sur l'accessibilité locale et la gouvernance."},
+    dims: {
+      struct: {score: 57, indicators: [{label:"Artificialisation / habitant", val:"458 m²/hab", src:"IGN OCS GE", status:"todo"},{label:"Indice de dispersion habitat", val:"0,52", src:"Calcul AREP", status:"demo"}]},
+      access: {score: 64, indicators: [{label:"Pop. < 1,5 km équipement scolaire", val:"71 %", src:"BPE 2024", status:"todo"},{label:"Équipements quotidien / 10 000 hab", val:"56", src:"BPE 2024", status:"todo"},{label:"Pop. < 500 m d'un arrêt TC", val:"58 %", src:"GTFS Kicéo", status:"todo"}]},
+      mob: {score: 52, indicators: [{label:"Part modale voiture (D-T)", val:"72 %", src:"INSEE 2021", status:"todo"},{label:"Taux de motorisation", val:"1,33 v/mén.", src:"INSEE 2021", status:"todo"},{label:"Distance moyenne D-T", val:"10,8 km", src:"INSEE 2021", status:"todo"}]},
+      env: {score: 61, indicators: [{label:"Émissions transport / habitant", val:"2,2 tCO₂eq", src:"CITEPA 2022", status:"todo"},{label:"PRG territorial / habitant", val:"6,7 tCO₂eq", src:"PCAET", status:"todo"},{label:"Conso. énergétique transport", val:"0,49 tep/hab", src:"PCAET", status:"todo"}]},
+      socio: {score: 67, indicators: [{label:"Revenu médian", val:"24 100 €", src:"INSEE Filosofi", status:"todo"},{label:"Part emplois dans l'EPCI", val:"82 %", src:"INSEE", status:"todo"},{label:"Actifs travaillant dans leur aire", val:"84 %", src:"INSEE", status:"todo"}]},
+      gouv: {score: 69, indicators: [{label:"Plan vélo structurant", val:"À remplir", src:"GMVA", status:"todo"},{label:"Budget mobilité / habitant", val:"À remplir", src:"Compte admin.", status:"todo"},{label:"PCAET adopté", val:"À remplir", src:"ADEME", status:"todo"}]}
+    }
+  }
+};
+
+const DIM_ORDER = ["struct","access","mob","env","socio","gouv"];
+const DIM_META = {
+  struct: {num:"01", label:"Structure territoriale", synth:"Indice de compacité", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="13" width="5" height="8" rx="1"/><rect x="10" y="9" width="4" height="12" rx="1"/><rect x="16" y="5" width="4" height="16" rx="1"/></svg>'},
+  access: {num:"02", label:"Accessibilité & maillage", synth:"Centralité fonctionnelle", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="2.5"/><circle cx="12" cy="12" r="6" stroke-dasharray="2 2"/><circle cx="12" cy="12" r="10" stroke-dasharray="2 3" opacity=".5"/></svg>'},
+  mob: {num:"03", label:"Mobilité", synth:"Dépendance automobile", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15h16l-2-6H6l-2 6z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>'},
+  env: {num:"04", label:"Performance environnementale", synth:"Intensité carbone", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c-4 4-7 7-7 11a7 7 0 0 0 14 0c0-4-3-7-7-11z"/></svg>'},
+  socio: {num:"05", label:"Structure socio-économique", synth:"Autonomie fonctionnelle", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="9" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/></svg>'},
+  gouv: {num:"06", label:"Gouvernance", synth:"Politiques mobilité / climat", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 7l7-3 7 3v5c0 4-3 7.5-7 9-4-1.5-7-5-7-9V7z"/><path d="M9 12l2 2 4-4"/></svg>'}
+};
+const DIM_SHORT = {struct:"Structure", access:"Accessibilité", mob:"Mobilité", env:"Environnement", socio:"Socio-éco", gouv:"Gouvernance"};
+
+// ============================================================
+// STATE
+// ============================================================
+let currentCode = "241700434";
+let compareCode = null;
+let liveData = {};   // { code: { territoire: {...}, indicateurs: {...} } }
+let mapInstance = null;
+
+// ============================================================
+// BACKEND CALLS
+// ============================================================
+async function fetchTerritoire(code) {
+  if (!BACKEND) return null;
+  try {
+    const [t, i] = await Promise.all([
+      fetch(`${BACKEND}/territoire/${code}`).then(r => r.ok ? r.json() : null),
+      fetch(`${BACKEND}/indicateurs/${code}`).then(r => r.ok ? r.json() : null)
+    ]);
+    if (t && i) return {territoire: t, indicateurs: i};
+  } catch (e) { console.warn("Backend error for", code, e); }
+  return null;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function gradeFromScore(s) { if (s >= 65) return "high"; if (s >= 45) return "mid"; return "low"; }
+function gradeLabel(g) { return g === "high" ? "Performant" : g === "mid" ? "Intermédiaire" : "Fragile"; }
+function fmtNum(n, d=0) { return n == null ? "—" : Number(n).toLocaleString("fr-FR", {maximumFractionDigits: d}); }
+function badge(status) {
+  if (status === "live") return '<span class="src-badge src-live">LIVE</span>';
+  if (status === "demo") return '<span class="src-badge src-demo">DÉMO</span>';
+  if (status === "todo") return '<span class="src-badge src-todo">À BRANCHER</span>';
+  return "";
+}
+
+// ============================================================
+// MERGE LIVE + DEMO
+// Retourne un objet territory unifié à afficher.
+// ============================================================
+function buildDisplayData(code) {
+  const demo = TERRITORIES_DEMO[code] || null;
+  const live = liveData[code] || null;
+
+  if (!live && !demo) return null;
+
+  // Base : on part du démo si dispo, sinon squelette minimal
+  const base = demo ? JSON.parse(JSON.stringify(demo)) : {
+    name: "Territoire inconnu", kind: "?", centerName: "", narrative: "",
+    synth: {score: null, grade: "mid", label: "Données partielles", desc: "Seules les données live sont disponibles."},
+    dims: {
+      struct:{score:null, indicators:[]}, access:{score:null, indicators:[]},
+      mob:{score:null, indicators:[]}, env:{score:null, indicators:[]},
+      socio:{score:null, indicators:[]}, gouv:{score:null, indicators:[]}
+    }
+  };
+
+  // Surcharge avec live (pop, superficie, contour, densité)
+  if (live && live.territoire) {
+    base.code = live.territoire.code;
+    base.population = live.territoire.population;
+    base.pop_src = "live";
+    base.superficie_km2 = live.territoire.superficie_km2;
+    base.superficie_src = "live";
+    base.nb_communes = live.territoire.nb_communes;
+    base.communes_src = "live";
+    base.nom_live = live.territoire.nom;
+    if (live.full) {
+      base.contour = live.full.contour;
+      base.centre = live.full.centre;
+      if (live.full.type_epci) {
+        const kindMap = {"CA":"Communauté d'Agglomération","CU":"Communauté Urbaine","CC":"Communauté de Communes","METRO":"Métropole","ME":"Métropole"};
+        base.kind = kindMap[live.full.type_epci] || base.kind;
+      }
+    }
+
+    // NOUVEAU FORMAT : on remplace tous les indicateurs des dimensions par les vrais
+    // si disponibles. L'ancien format DEMO est conservé uniquement pour les dimensions
+    // encore non branchées (access, mob).
+    if (live.indicateurs && live.indicateurs.dimensions) {
+      const liveDims = live.indicateurs.dimensions;
+      const dimKeyMap = {
+        struct: "struct", access: "access", mob: "mob",
+        env: "env", socio: "socio", gouv: "gouv"
+      };
+      for (const [dimKey, liveDim] of Object.entries(liveDims)) {
+        const ourKey = dimKeyMap[dimKey];
+        if (!ourKey || !base.dims[ourKey]) continue;
+        if (liveDim.indicateurs && Array.isArray(liveDim.indicateurs) && liveDim.indicateurs.length > 0) {
+          // Convertir le format backend en format frontend
+          base.dims[ourKey].indicators = liveDim.indicateurs.map(ind => ({
+            label: ind.libelle,
+            val: ind.valeur_formatee != null
+                 ? (ind.unite ? `${ind.valeur_formatee} ${ind.unite}`.trim() : ind.valeur_formatee)
+                 : (ind.valeur != null ? String(ind.valeur) : "—"),
+            src: ind.source || "",
+            status: ind.statut === "ok" ? "live"
+                   : ind.statut === "rempli" ? "live"
+                   : ind.statut === "a_remplir" ? "todo"
+                   : "todo"
+          }));
+          // Marquer que cette dim a des données live
+          base.dims[ourKey]._hasLive = true;
+        }
+      }
+    }
+  } else {
+    // Pas de live : on utilise les valeurs démo si présentes dans l'ancien format
+    base.code = code;
+    base.pop_src = "demo"; base.superficie_src = "demo"; base.communes_src = "demo";
+  }
+
+  return base;
+}
+
+// ============================================================
+// MAP
+// ============================================================
+async function fetchContourGeo(code) {
+  // Fallback direct sur geo.api.gouv.fr si pas de backend
+  const isCommune = /^\d[\dAB]\d{3}$/i.test(code);
+  const path = isCommune ? "communes" : "epcis";
+  const url = `https://geo.api.gouv.fr/${path}?code=${code}&fields=contour&format=geojson&geometry=contour`;
+  try {
+    const r = await fetch(url);
+    if (r.ok) return await r.json();
+  } catch (e) {}
+  return null;
+}
+
+async function initMap(container, territory, compare) {
+  if (mapInstance) { mapInstance.remove(); mapInstance = null; }
+  const map = L.map(container, {
+    zoomControl: false, attributionControl: false,
+    dragging: true, scrollWheelZoom: false, doubleClickZoom: true,
+    touchZoom: true, keyboard: false, tap: false
+  });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {subdomains:'abcd', maxZoom:18}).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {subdomains:'abcd', maxZoom:18, opacity:.85}).addTo(map);
+  mapInstance = map;
+
+  const loader = document.createElement('div');
+  loader.className = 't-map-loader';
+  loader.innerHTML = '<span>Chargement du contour…</span>';
+  container.parentNode.appendChild(loader);
+
+  const getContour = async (t) => {
+    if (t.contour) return t.contour;
+    return await fetchContourGeo(t.code);
+  };
+
+  const primary = await getContour(territory);
+  const cmp = compare ? await getContour(compare) : null;
+
+  if (loader.parentNode) loader.parentNode.removeChild(loader);
+
+  if (primary) {
+    const pLayer = L.geoJSON(primary, {style:{color:'#b8442e', weight:2, fillColor:'#b8442e', fillOpacity:.14}}).addTo(map);
+    try {
+      const b = pLayer.getBounds(); const c = b.getCenter();
+      L.marker([c.lat, c.lng], {icon: L.divIcon({
+        className:'epci-center-marker',
+        html:`<div style="transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center"><div style="background:#14171c;color:#fff;padding:3px 9px;border-radius:4px;font:600 11px 'Segoe UI',sans-serif;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)">${territory.centerName || territory.nom_live || territory.name}</div><div style="width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #14171c"></div></div>`,
+        iconSize:[0,0]
+      })}).addTo(map);
+    } catch (e) {}
+    if (cmp) {
+      const cLayer = L.geoJSON(cmp, {style:{color:'#2f5f8a', weight:2, fillColor:'#2f5f8a', fillOpacity:.12, dashArray:'4 3'}}).addTo(map);
+      map.fitBounds(L.featureGroup([pLayer, cLayer]).getBounds(), {padding:[20,20]});
+    } else {
+      map.fitBounds(pLayer.getBounds(), {padding:[25,25]});
+    }
+  } else {
+    map.setView([46.5, 2.5], 5);
+  }
+}
+
+// ============================================================
+// RADAR
+// ============================================================
+function renderRadar(territory, compare) {
+  const W = 340, H = 300, cx = W/2, cy = H/2+5, R = 110;
+  const rings = [0.2, 0.4, 0.6, 0.8, 1.0];
+  const angleFor = i => -Math.PI/2 + i * (2*Math.PI/6);
+  const ringPolys = rings.map(ratio => {
+    const pts = [];
+    for (let i=0; i<6; i++) { const a = angleFor(i); pts.push([cx + R*ratio*Math.cos(a), cy + R*ratio*Math.sin(a)]); }
+    return pts.map(p => p.join(",")).join(" ");
+  });
+  const axes = []; for (let i=0; i<6; i++) { const a = angleFor(i); axes.push({x: cx+R*Math.cos(a), y: cy+R*Math.sin(a)}); }
+  const labels = DIM_ORDER.map((k,i) => {
+    const a = angleFor(i), lr = R+22;
+    return {
+      x: cx+lr*Math.cos(a), y: cy+lr*Math.sin(a),
+      text: DIM_SHORT[k],
+      anchor: Math.abs(Math.cos(a)) < 0.2 ? "middle" : (Math.cos(a) > 0 ? "start" : "end"),
+      dy: Math.sin(a) > 0.3 ? 8 : (Math.sin(a) < -0.3 ? -2 : 4)
+    };
+  });
+  const dataPts = DIM_ORDER.map((k,i) => {
+    const a = angleFor(i);
+    const score = territory.dims[k].score || 0;
+    const ratio = score/100;
+    return [cx + R*ratio*Math.cos(a), cy + R*ratio*Math.sin(a)];
+  });
+  const dataPoly = dataPts.map(p => p.join(",")).join(" ");
+  let cmpPoly = "", cmpDots = "";
+  if (compare) {
+    const cmpPts = DIM_ORDER.map((k,i) => {
+      const a = angleFor(i);
+      const score = compare.dims[k].score || 0;
+      const ratio = score/100;
+      return [cx + R*ratio*Math.cos(a), cy + R*ratio*Math.sin(a)];
+    });
+    cmpPoly = cmpPts.map(p => p.join(",")).join(" ");
+    cmpDots = cmpPts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#2f5f8a"/>`).join("");
+  }
+  const dataDots = dataPts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#b8442e"/>`).join("");
+
+  return `<svg class="radar-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    ${ringPolys.map((poly,i) => `<polygon points="${poly}" fill="none" stroke="#e4e1da" stroke-width="${i===4?1.5:1}" ${i<4?'stroke-dasharray="2 3"':''}/>`).join("")}
+    ${axes.map(a => `<line x1="${cx}" y1="${cy}" x2="${a.x.toFixed(1)}" y2="${a.y.toFixed(1)}" stroke="#edebe4" stroke-width="1"/>`).join("")}
+    <text x="${cx+3}" y="${cy-R*0.5}" font-size="9" fill="#a8adb5">50</text>
+    <text x="${cx+3}" y="${cy-R}" font-size="9" fill="#a8adb5">100</text>
+    ${compare ? `<polygon points="${cmpPoly}" fill="var(--radar-compare-fill)" stroke="var(--radar-compare-stroke)" stroke-width="1.5" stroke-dasharray="4 3"/>` : ""}
+    <polygon points="${dataPoly}" fill="var(--radar-fill)" stroke="var(--radar-stroke)" stroke-width="2"/>
+    ${cmpDots}${dataDots}
+    ${labels.map(l => `<text x="${l.x.toFixed(1)}" y="${l.y.toFixed(1)}" font-size="11" font-weight="600" fill="#3d434d" text-anchor="${l.anchor}" dy="${l.dy}">${l.text}</text>`).join("")}
+  </svg>`;
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderPills() {
+  const el = document.getElementById("pills"); el.innerHTML = "";
+  Object.entries(TERRITORIES_DEMO).forEach(([code, t]) => {
+    const b = document.createElement("button");
+    b.className = "pill" + (code === currentCode ? " active" : "");
+    b.innerHTML = `${t.name}<span class="pill-sub">SIREN ${code}</span>`;
+    b.onclick = () => { currentCode = code; if (compareCode === code) compareCode = null; loadAndRender(); };
+    el.appendChild(b);
+  });
+}
+
+function renderTerritory() {
+  const t = buildDisplayData(currentCode);
+  const c = compareCode ? buildDisplayData(compareCode) : null;
+  const view = document.getElementById("territoryView");
+
+  if (!t) {
+    view.innerHTML = `<div style="padding:40px;text-align:center;color:var(--ink-3)">Territoire introuvable.</div>`;
+    return;
+  }
+
+  const popBadge = badge(t.pop_src || "demo");
+  const areaBadge = badge(t.superficie_src || "demo");
+  const commBadge = badge(t.communes_src || "demo");
+
+  const compareLine = c ? `
+    <div class="synth-compare">
+      <span>vs. <strong>${c.name}</strong></span>
+      <span class="synth-compare-val">${c.synth.score ?? "?"}/100 · ${c.synth.label}</span>
+    </div>` : "";
+
+  const radarLegend = c ? `
+    <div class="radar-legend">
+      <span><span class="dot ref"></span>${t.name}</span>
+      <span><span class="dot cmp"></span>${c.name}</span>
+    </div>` : `
+    <div class="radar-legend"><span><span class="dot ref"></span>${t.name}</span></div>`;
+
+  view.innerHTML = `
+    <div class="t-view">
+      <div class="t-hero">
+        <div class="t-title-wrap">
+          <div>
+            <div class="t-kicker">
+              <span>${t.kind}</span>
+              <span class="siren-code">${/^\d[\dAB]\d{3}$/i.test(t.code||currentCode) ? "Code INSEE" : "SIREN"} ${t.code || currentCode}</span>
+            </div>
+            <h2 class="t-title">${t.nom_live || t.name}.</h2>
+            <p class="t-narrative">${t.narrative || ""}</p>
+          </div>
+          <div class="t-meta-grid">
+            <div class="t-meta-item">
+              <div class="t-meta-label">Population</div>
+              <div class="t-meta-val">${fmtNum(t.population)}<span class="unit">hab.</span></div>
+              <div class="t-meta-src ${t.pop_src === 'live' ? '' : 'demo'}">${t.pop_src === 'live' ? 'LIVE · INSEE/geo.api' : 'DÉMO'}</div>
+            </div>
+            <div class="t-meta-item">
+              <div class="t-meta-label">Communes</div>
+              <div class="t-meta-val">${fmtNum(t.nb_communes)}<span class="unit">communes</span></div>
+              <div class="t-meta-src ${t.communes_src === 'live' ? '' : 'demo'}">${t.communes_src === 'live' ? 'LIVE · geo.api' : 'DÉMO'}</div>
+            </div>
+            <div class="t-meta-item">
+              <div class="t-meta-label">Superficie</div>
+              <div class="t-meta-val">${fmtNum(t.superficie_km2, 0)}<span class="unit">km²</span></div>
+              <div class="t-meta-src ${t.superficie_src === 'live' ? '' : 'demo'}">${t.superficie_src === 'live' ? 'LIVE · geo.api' : 'DÉMO'}</div>
+            </div>
+          </div>
+        </div>
+        <div class="t-map-wrap">
+          <div class="t-map" id="territoryMap"></div>
+          <div class="t-map-overlay">
+            <div class="t-map-label">Contour officiel</div>
+            <div class="t-map-src">geo.api.gouv.fr · OSM/CARTO</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="synthesis">
+        <div class="synth-score-card">
+          <div>
+            <div class="synth-label">Indice synthétique (démo — à recalculer)</div>
+            <div class="synth-title">${t.synth.label}</div>
+            <div class="synth-desc">${t.synth.desc}</div>
+          </div>
+          <div>
+            <div class="synth-score-block">
+              <div class="synth-score-val">${t.synth.score ?? "?"}<span class="over">/100</span></div>
+              <div class="synth-grade grade-${t.synth.grade}">${gradeLabel(t.synth.grade)}</div>
+            </div>
+            ${compareLine}
+          </div>
+        </div>
+        <div class="radar-card">
+          <div class="radar-head">
+            <div>
+              <div class="radar-head-title">Vue synthétique · 6 dimensions</div>
+              <div class="radar-head-sub">Scores 0–100 · démo</div>
+            </div>
+            ${radarLegend}
+          </div>
+          <div class="radar-svg-wrap" id="radarWrap"></div>
+        </div>
+      </div>
+
+      <div class="dims-section">
+        <div class="dims-section-title">
+          <h3>Détail par dimension</h3>
+          <div class="meta">${DIM_ORDER.length} dimensions</div>
+        </div>
+        <div class="dims">
+          ${DIM_ORDER.map(k => renderDim(k, t.dims[k], c ? c.dims[k] : null, c)).join("")}
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById("radarWrap").innerHTML = renderRadar(t, c);
+  const mapEl = document.getElementById("territoryMap");
+  if (mapEl) initMap(mapEl, t, c);
+}
+
+function renderDim(key, dim, cmpDim, cmpT) {
+  const meta = DIM_META[key];
+  const score = dim.score;
+  const grade = score != null ? gradeFromScore(score) : "mid";
+  const cmpMarker = cmpDim && cmpDim.score != null ? `<div class="gauge-marker-cmp" style="left:${cmpDim.score}%"></div>` : "";
+  return `
+    <div class="dim grade-${grade}">
+      <div class="dim-head">
+        <div><div class="dim-num">${meta.num}</div><div class="dim-icon">${meta.icon}</div></div>
+        <div class="dim-score-block">
+          <div class="dim-score-label">Score démo</div>
+          <div class="dim-score-val ${score == null ? 'na' : ''}">${score == null ? '—' : score}<span class="s">/100</span></div>
+        </div>
+      </div>
+      <h4>${meta.label}</h4>
+      <div class="dim-synth">${meta.synth}</div>
+      <div class="gauge">
+        <div class="gauge-track">
+          <div class="gauge-fill ${grade}" style="width:${score || 0}%"></div>
+          ${cmpMarker}
+        </div>
+        <div class="gauge-scale"><span>0</span><span>50</span><span>100</span></div>
+      </div>
+      <div class="dim-indicators">
+        ${dim.indicators.map((ind, i) => {
+          const cmpInd = cmpDim && cmpDim.indicators ? cmpDim.indicators[i] : null;
+          return `<div class="ind">
+            <div>
+              <div class="ind-label">${ind.label} ${badge(ind.status || 'todo')}</div>
+              <span class="ind-src">${ind.src}</span>
+            </div>
+            <div class="ind-val-wrap">
+              <span class="ind-val ${ind.val === 'À remplir' || ind.val === '—' ? 'na' : ''}">${ind.val}</span>
+              ${cmpInd ? `<span class="ind-cmp">${(cmpT.nom_live || cmpT.name).split(' ')[0]} · ${cmpInd.val}</span>` : ""}
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>`;
+}
+
+function renderCompareControls() {
+  const bar = document.getElementById("compareBar");
+  const btn = document.getElementById("compareBtn");
+  const sel = document.getElementById("compareSelect");
+  const ref = document.getElementById("compareRef");
+  sel.innerHTML = `<option value="">Choisir un territoire…</option>` +
+    Object.entries(TERRITORIES_DEMO).filter(([k]) => k !== currentCode)
+      .map(([k,t]) => `<option value="${k}" ${k === compareCode ? "selected" : ""}>${t.name}</option>`).join("");
+  if (compareCode) {
+    bar.classList.add("on"); btn.classList.add("active");
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg> Comparaison active`;
+    ref.textContent = TERRITORIES_DEMO[compareCode] ? TERRITORIES_DEMO[compareCode].name : compareCode;
+  } else {
+    bar.classList.remove("on"); btn.classList.remove("active");
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10M7 12h10M7 17h10"/></svg> Comparer`;
+    ref.textContent = "–";
+  }
+  btn.onclick = () => {
+    if (compareCode) compareCode = null;
+    else {
+      const others = Object.keys(TERRITORIES_DEMO).filter(k => k !== currentCode);
+      compareCode = others[0];
+    }
+    loadAndRender();
+  };
+  sel.onchange = e => { compareCode = e.target.value || null; loadAndRender(); };
+  document.getElementById("closeCompare").onclick = () => { compareCode = null; loadAndRender(); };
+}
+
+// ============================================================
+// MAIN
+// ============================================================
+async function loadAndRender() {
+  // Charger les données live pour currentCode et compareCode si backend dispo
+  if (BACKEND) {
+    const codes = [currentCode, compareCode].filter(Boolean);
+    for (const code of codes) {
+      if (!liveData[code]) {
+        const d = await fetchTerritoire(code);
+        if (d) {
+          // Aussi récupérer la réponse complète du /territoire pour contour + type_epci
+          try {
+            const r = await fetch(`${BACKEND}/territoire/${code}`);
+            if (r.ok) d.full = await r.json();
+          } catch (e) {}
+          liveData[code] = d;
+        }
+      }
+    }
+  }
+  renderAll();
+}
+
+function renderAll() {
+  renderPills();
+  renderTerritory();
+  renderCompareControls();
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+document.getElementById("btnLoadLibre").onclick = () => {
+  const code = document.getElementById("codeLibre").value.trim();
+  if (code) { currentCode = code; compareCode = null; loadAndRender(); }
+};
+document.getElementById("codeLibre").addEventListener("keydown", e => {
+  if (e.key === "Enter") document.getElementById("btnLoadLibre").click();
+});
+
+setBackend(BACKEND);
+loadAndRender();
+</script>
+</body>
+</html>
