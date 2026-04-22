@@ -27,7 +27,7 @@ html{-webkit-font-smoothing:antialiased}
 body{background:var(--bg);background-image:radial-gradient(rgba(20,23,28,.035) 1px,transparent 1px);background-size:22px 22px;color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.5;letter-spacing:-.005em}
 .container{max-width:1280px;margin:0 auto;padding:0 36px}
 
-/* Header */
+
 header.site{position:sticky;top:0;z-index:100;background:rgba(244,242,238,.92);backdrop-filter:saturate(180%) blur(12px);-webkit-backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--rule)}
 .site-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:24px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:18px}
@@ -41,7 +41,7 @@ header.site{position:sticky;top:0;z-index:100;background:rgba(244,242,238,.92);b
 .status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gauge-high);margin-right:6px;box-shadow:0 0 0 3px rgba(88,122,76,.15)}
 .meta-right .tag{padding:4px 10px;background:var(--bg-card);border:1px solid var(--rule);border-radius:100px;font-size:11px;font-weight:500}
 
-/* Backend config */
+
 .backend-config{margin-top:18px;padding:14px 18px;background:#fff8e8;border:1px solid #f0d090;border-radius:8px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:13px}
 .backend-config label{font-weight:600;color:var(--ink-2);white-space:nowrap}
 .backend-config input{flex:1;min-width:280px;padding:8px 11px;border:1px solid var(--rule);border-radius:5px;font-family:var(--font-mono);font-size:12px}
@@ -51,7 +51,7 @@ header.site{position:sticky;top:0;z-index:100;background:rgba(244,242,238,.92);b
 .pill-state.live{background:rgba(88,122,76,.15);color:var(--gauge-high)}
 .pill-state.off{background:rgba(193,75,50,.12);color:var(--gauge-low)}
 
-/* Hero */
+  
 .hero{padding:60px 0 30px;max-width:920px;position:relative}
 .hero::before{content:"";position:absolute;top:60px;left:-36px;width:3px;height:56px;background:var(--accent);border-radius:2px}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:22px}
@@ -62,7 +62,7 @@ h1.hero-title em{font-style:normal;background:linear-gradient(180deg,transparent
 .hero-sub{margin-top:18px;max-width:700px;font-size:16px;color:var(--ink-2);line-height:1.55}
 .hero-sub strong{font-weight:600;color:var(--ink)}
 
-/* Selector */
+  
 .selector-wrap{margin-top:34px;display:flex;flex-direction:column;gap:14px}
 .selector{display:flex;background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm)}
 .selector-label{padding:18px 22px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;border-right:1px solid var(--rule);display:flex;align-items:center;background:var(--bg-soft);min-width:170px}
@@ -89,7 +89,7 @@ h1.hero-title em{font-style:normal;background:linear-gradient(180deg,transparent
 .compare-bar select option{color:var(--ink);background:var(--bg-card)}
 .compare-bar .close-btn{margin-left:auto;background:transparent;border:none;color:var(--bg-card);cursor:pointer;font-size:14px;opacity:.7}
 
-/* Territory */
+
 .t-view{margin-top:48px;animation:fadeIn .4s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .t-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:stretch;padding-bottom:36px;border-bottom:1px solid var(--rule)}
@@ -109,7 +109,7 @@ h2.t-title strong{font-weight:600}
 .t-meta-src.demo{color:var(--ink-4)}
 .t-narrative{margin-top:20px;font-size:15px;color:var(--ink-2);line-height:1.55;font-style:italic}
 
-/* Map */
+
 .t-map-wrap{position:relative;background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-md);min-height:380px}
 .t-map{width:100%;height:100%;min-height:380px;background:var(--bg-soft)}
 .leaflet-container{background:var(--bg-soft);font-family:var(--font-ui) !important}
@@ -118,7 +118,7 @@ h2.t-title strong{font-weight:600}
 .t-map-src{font-size:10px;color:var(--ink-4);font-family:var(--font-mono)}
 .t-map-loader{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--ink-3);z-index:1000;display:flex;align-items:center;gap:8px}
 
-/* Synthesis */
+
 .synthesis{margin-top:36px;display:grid;grid-template-columns:1fr 1.25fr;gap:28px;align-items:stretch}
 .synth-score-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;padding:26px 28px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
 .synth-score-card::after{content:"";position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,var(--accent-tint) 0%,transparent 70%);pointer-events:none}
@@ -140,7 +140,7 @@ h2.t-title strong{font-weight:600}
 .synth-compare{margin-top:14px;padding-top:14px;border-top:1px dashed var(--rule);font-size:13px;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center}
 .synth-compare-val{font-weight:600;color:var(--blue)}
 
-/* Radar */
+
 .radar-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;padding:26px 28px 18px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
 .radar-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .radar-head-title{font-size:20px;font-weight:600;letter-spacing:-.01em}
@@ -152,7 +152,7 @@ h2.t-title strong{font-weight:600}
 .radar-svg-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:4px 0;min-height:280px}
 .radar-svg{max-width:100%;height:auto}
 
-/* Dims */
+
 .dims-section{margin-top:36px}
 .dims-section-title{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
 .dims-section-title h3{font-size:20px;font-weight:600;letter-spacing:-.01em}
@@ -195,17 +195,17 @@ h2.t-title strong{font-weight:600}
 .ind-val.na{color:var(--ink-4);font-weight:400;font-style:italic}
 .ind-cmp{display:block;font-size:11px;color:var(--blue);margin-top:2px;font-weight:500}
 
-/* Badge source */
+
 .src-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.04em;margin-left:6px;vertical-align:middle}
 .src-live{background:rgba(88,122,76,.15);color:var(--gauge-high)}
 .src-demo{background:rgba(168,173,181,.2);color:var(--ink-3)}
 .src-todo{background:rgba(216,152,58,.15);color:#a67126}
 
-/* Data-source legend */
+
 .data-legend{margin-top:20px;padding:12px 18px;background:var(--bg-soft);border:1px dashed var(--rule);border-radius:6px;font-size:12px;color:var(--ink-3);line-height:1.6}
 .data-legend strong{color:var(--ink)}
 
-/* Footer */
+
 footer.site-footer{margin-top:60px;padding:28px 0 36px;border-top:1px solid var(--rule);display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;font-size:12px;color:var(--ink-3)}
 .footer-mark{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink)}
 .footer-mark .a{width:6px;height:16px;background:var(--accent);border-radius:1px}
@@ -303,9 +303,8 @@ footer.site-footer{margin-top:60px;padding:28px 0 36px;border-top:1px solid var(
 </main>
 
 <script>
-// ============================================================
-// CONFIG BACKEND
-// ============================================================
+
+  
 let BACKEND = localStorage.getItem("gtbdde_backend") || "";
 
 function setBackend(url) {
@@ -342,11 +341,8 @@ document.getElementById("btnSaveBackend").onclick = () => {
   renderAll();
 };
 
-// ============================================================
-// DONNÉES DÉMO (héritées V0.2 — illustratives pour les 5 agglos)
-// Seuls les scores et indicateurs non-branchés sont en démo.
-// Pop/superficie/communes/densité viennent du backend.
-// ============================================================
+
+  
 const TERRITORIES_DEMO = {
   "241700434": {
     name: "CA de La Rochelle", kind: "Communauté d'Agglomération", centerName: "La Rochelle",
@@ -449,17 +445,15 @@ const DIM_META = {
 };
 const DIM_SHORT = {struct:"Structure", access:"Accessibilité", mob:"Mobilité", env:"Environnement", socio:"Socio-éco", gouv:"Gouvernance"};
 
-// ============================================================
-// STATE
-// ============================================================
+
+  
 let currentCode = "241700434";
 let compareCode = null;
 let liveData = {};   // { code: { territoire: {...}, indicateurs: {...} } }
 let mapInstance = null;
 
-// ============================================================
-// BACKEND CALLS
-// ============================================================
+
+  
 async function fetchTerritoire(code) {
   if (!BACKEND) return null;
   try {
@@ -472,9 +466,8 @@ async function fetchTerritoire(code) {
   return null;
 }
 
-// ============================================================
-// HELPERS
-// ============================================================
+
+  
 function gradeFromScore(s) { if (s >= 65) return "high"; if (s >= 45) return "mid"; return "low"; }
 function gradeLabel(g) { return g === "high" ? "Performant" : g === "mid" ? "Intermédiaire" : "Fragile"; }
 function fmtNum(n, d=0) { return n == null ? "—" : Number(n).toLocaleString("fr-FR", {maximumFractionDigits: d}); }
@@ -485,10 +478,8 @@ function badge(status) {
   return "";
 }
 
-// ============================================================
-// MERGE LIVE + DEMO
-// Retourne un objet territory unifié à afficher.
-// ============================================================
+
+  
 function buildDisplayData(code) {
   const demo = TERRITORIES_DEMO[code] || null;
   const live = liveData[code] || null;
@@ -506,7 +497,8 @@ function buildDisplayData(code) {
     }
   };
 
-  // Surcharge avec live (pop, superficie, contour, densité)
+ 
+  
   if (live && live.territoire) {
     base.code = live.territoire.code;
     base.population = live.territoire.population;
@@ -564,9 +556,9 @@ function buildDisplayData(code) {
   return base;
 }
 
-// ============================================================
-// MAP
-// ============================================================
+
+
+  
 async function fetchContourGeo(code) {
   // Fallback direct sur geo.api.gouv.fr si pas de backend
   const isCommune = /^\d[\dAB]\d{3}$/i.test(code);
@@ -626,9 +618,9 @@ async function initMap(container, territory, compare) {
   }
 }
 
-// ============================================================
-// RADAR
-// ============================================================
+
+
+  
 function renderRadar(territory, compare) {
   const W = 340, H = 300, cx = W/2, cy = H/2+5, R = 110;
   const rings = [0.2, 0.4, 0.6, 0.8, 1.0];
@@ -680,9 +672,9 @@ function renderRadar(territory, compare) {
   </svg>`;
 }
 
-// ============================================================
-// RENDER
-// ============================================================
+
+
+  
 function renderPills() {
   const el = document.getElementById("pills"); el.innerHTML = "";
   Object.entries(TERRITORIES_DEMO).forEach(([code, t]) => {
@@ -873,9 +865,8 @@ function renderCompareControls() {
   document.getElementById("closeCompare").onclick = () => { compareCode = null; loadAndRender(); };
 }
 
-// ============================================================
-// MAIN
-// ============================================================
+
+  
 async function loadAndRender() {
   // Charger les données live pour currentCode et compareCode si backend dispo
   if (BACKEND) {
@@ -903,9 +894,7 @@ function renderAll() {
   renderCompareControls();
 }
 
-// ============================================================
-// BOOT
-// ============================================================
+
 document.getElementById("btnLoadLibre").onclick = () => {
   const code = document.getElementById("codeLibre").value.trim();
   if (code) { currentCode = code; compareCode = null; loadAndRender(); }
