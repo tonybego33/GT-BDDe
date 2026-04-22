@@ -1,0 +1,1 @@
+{"_t": 1776876747.272136, "_k": "/communes?nom=Imp&fields=nom%2Ccode%2CcodeDepartement%2CcodesPostaux%2Cpopulation&boost=population&limit=10", "value": [{"nom": "Imphy", "code": "58134", "codeDepartement": "58", "codesPostaux": ["58160"], "population": 3182, "_score": 1.03182}]}

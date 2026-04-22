@@ -1,0 +1,1 @@
+{"_t": 1776876857.820838, "_k": "/epcis?nom=AB&fields=nom%2Ccode%2Ctype%2CpopulationTotale&limit=5", "value": [{"nom": "CC du Pays des Abers", "code": "242900553", "type": "CC", "_score": 0.7399881062216147}, {"nom": "CC Pays d'Evian Vallée d'Abondance", "code": "200071967", "type": "CC", "_score": 0.3114305492058228}]}

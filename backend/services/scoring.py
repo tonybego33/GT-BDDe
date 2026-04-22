@@ -26,6 +26,7 @@ Les indicateurs ambigus ne sont pas scorés (seulement affichés).
 """
 from __future__ import annotations
 
+import bisect
 import csv
 from collections import defaultdict
 from pathlib import Path
@@ -61,6 +62,11 @@ INDICATEURS_SENS = {
     "bpe_sport_culture_par_10k": +1,
     # Socio
     "part_actifs":           +1,
+    # Socio - Filosofi INSEE
+    "revenu_median":         +1,   # + de revenu = mieux
+    "taux_pauvrete":         -1,   # - de pauvreté = mieux
+    "rapport_interdecile":   -1,   # - d'inégalité = mieux
+    "part_imposes":          +1,   # + de contributeurs = mieux
 }
 
 # Mapping code frontend → colonne CSV indicateurs (pour récup des valeurs)
@@ -73,6 +79,11 @@ INDICATEUR_COLONNE = {
     "ges_transport_par_hab":  ("calcul", "ROUTE / P21_POP"),
     "conso_energie_par_hab":  ("calcul", "TOTAL_FLUX / P21_POP"),
     "part_actifs":            ("calcul", "P21_ACTOCC1564 / P21_POP"),
+    # Filosofi (pré-calculés par l'INSEE, lecture directe depuis filosofi_communes.csv)
+    "revenu_median":          ("col", "revenu_median"),
+    "taux_pauvrete":          ("col", "taux_pauvrete"),
+    "rapport_interdecile":    ("col", "rapport_interdecile"),
+    "part_imposes":           ("col", "part_imposes"),
     # Les bpe_* sont traités à part car viennent d'un autre CSV
 }
 
@@ -97,7 +108,11 @@ PONDERATIONS_DIMENSIONS = {
         "conso_energie_par_hab": 25,
     },
     "socio": {
-        "part_actifs": 100,
+        "revenu_median":       25,
+        "taux_pauvrete":       25,
+        "rapport_interdecile": 15,
+        "part_imposes":        10,
+        "part_actifs":         25,
     },
     # mob et gouv non scorés automatiquement pour l'instant
 }
@@ -138,6 +153,8 @@ _cache = {
     "loaded": False,
     "communes_data": {},   # {codgeo: {col: valeur, 'cat': int}}
     "quantiles": {},       # {groupe: {indicateur_code: [p20, p40, p60, p80]}}
+    "sorted_values": {},   # {groupe: {code: [valeurs triées]}} - pour percentile exact
+    "sorted_national": {}, # {code: [valeurs triées]} - idem national
     "bpe": {},             # {codgeo: {domaine: count}}
 }
 
@@ -268,6 +285,20 @@ def _load() -> None:
                     pass
         _cache["bpe"] = bpe_data
 
+    # Charger le CSV Filosofi (communes) et merger les colonnes socio
+    # dans la table des communes pour qu'elles soient quantilées comme les autres.
+    filosofi_csv = DATA_DIR / "filosofi_communes.csv"
+    if filosofi_csv.exists():
+        cols_filo = ["revenu_median", "taux_pauvrete", "rapport_interdecile",
+                     "part_imposes", "part_presta_sociales"]
+        with open(filosofi_csv, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                code = str(row.get("codgeo", "")).strip()
+                if code in communes:
+                    for c in cols_filo:
+                        communes[code][c] = _to_float(row.get(c))
+
     # Précalculer les valeurs d'indicateurs pour toutes les communes
     # et grouper par typologie
     values_by_group = defaultdict(lambda: defaultdict(list))
@@ -309,14 +340,23 @@ def _load() -> None:
     for code, vals in values_national.items():
         quantiles["national"][code] = _quantiles(vals)
     _cache["quantiles"] = quantiles
+
+    # Stocker aussi les valeurs triées pour calcul de percentile exact
+    sorted_by_group = {}
+    for groupe, by_ind in values_by_group.items():
+        sorted_by_group[groupe] = {code: sorted(v for v in vals if v is not None)
+                                   for code, vals in by_ind.items()}
+    _cache["sorted_values"] = sorted_by_group
+    _cache["sorted_national"] = {code: sorted(v for v in vals if v is not None)
+                                 for code, vals in values_national.items()}
+
     _cache["loaded"] = True
 
 
 def _score_from_quantiles(val: float, quantiles: list, sens: int) -> float:
     """
     Convertit une valeur en score 0-100 selon les quantiles P20/P40/P60/P80.
-    sens = +1 : plus haut = meilleur score
-    sens = -1 : plus bas = meilleur score
+    Conservé pour compat ; le scoring utilise maintenant _percentile_rank.
     """
     if not quantiles or any(q is None for q in quantiles):
         return 50.0
@@ -333,6 +373,28 @@ def _score_from_quantiles(val: float, quantiles: list, sens: int) -> float:
         if val <= p60: return 50
         if val <= p80: return 30
         return 10
+
+
+def _percentile_rank(val: float, sorted_values: list) -> Optional[float]:
+    """
+    Retourne le rang percentile de val dans une liste triée (0-100).
+    Rang brut, SANS ajustement de sens : pourcentage de valeurs strictement inférieures.
+    """
+    if not sorted_values:
+        return None
+    n = len(sorted_values)
+    # bisect_right donne le nombre de valeurs <= val
+    idx = bisect.bisect_right(sorted_values, val)
+    return round(100 * idx / n, 1)
+
+
+def _score_from_rank(rang: float, sens: int) -> float:
+    """
+    Convertit un rang percentile brut en score 0-100.
+    sens = +1 : plus haut rang = meilleur score → score = rang
+    sens = -1 : plus bas rang = meilleur score → score = 100 - rang
+    """
+    return rang if sens == +1 else 100 - rang
 
 
 def get_scoring_for_territoire(territoire: dict, indicateurs_locaux: dict, bpe_ind: dict) -> dict:
@@ -378,6 +440,8 @@ def get_scoring_for_territoire(territoire: dict, indicateurs_locaux: dict, bpe_i
             groupe = "hors_influence"
 
     quantiles_groupe = _cache["quantiles"].get(groupe, _cache["quantiles"].get("national", {}))
+    sorted_groupe = _cache["sorted_values"].get(groupe, {})
+    sorted_national = _cache["sorted_national"]
 
     # Extraire les valeurs des indicateurs du territoire
     scores_indicateurs = {}
@@ -390,19 +454,36 @@ def get_scoring_for_territoire(territoire: dict, indicateurs_locaux: dict, bpe_i
             val = bpe_ind[code].get("valeur")
         if val is None:
             continue
-        quants = quantiles_groupe.get(code)
-        if not quants or any(q is None for q in quants):
-            # Fallback national
-            quants = _cache["quantiles"].get("national", {}).get(code)
-        if not quants or any(q is None for q in quants):
+
+        # Rang percentile dans la typologie (fallback national si pas assez de données)
+        sorted_typo_vals = sorted_groupe.get(code, [])
+        if len(sorted_typo_vals) < 10:  # moins de 10 communes = pas fiable
+            sorted_typo_vals = sorted_national.get(code, [])
+            groupe_effectif = "national"
+        else:
+            groupe_effectif = groupe
+        rang_typo = _percentile_rank(val, sorted_typo_vals)
+        rang_national = _percentile_rank(val, sorted_national.get(code, []))
+
+        if rang_typo is None and rang_national is None:
             continue
-        score = _score_from_quantiles(val, quants, sens)
+
+        # Score principal = celui de la typologie (avec sens)
+        score = _score_from_rank(rang_typo if rang_typo is not None else rang_national, sens)
+        score_national = _score_from_rank(rang_national, sens) if rang_national is not None else None
+
         scores_indicateurs[code] = {
-            "score": score,
+            "score": round(score, 1),
+            "score_national": round(score_national, 1) if score_national is not None else None,
+            "rang_typo": rang_typo,
+            "rang_national": rang_national,
             "valeur": val,
-            "quantiles": quants,
+            "quantiles": quantiles_groupe.get(code),
             "sens": sens,
-            "groupe": groupe,
+            "groupe": groupe_effectif,
+            "libelle_typo": LIBELLES_TYPO.get(groupe_effectif, groupe_effectif),
+            "n_typo": len(sorted_typo_vals),
+            "n_national": len(sorted_national.get(code, [])),
         }
 
     # Scores de dimension (moyenne pondérée)

@@ -118,6 +118,16 @@ h2.t-title strong{font-weight:600}
 .t-map-src{font-size:10px;color:var(--ink-4);font-family:var(--font-mono)}
 .t-map-loader{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--ink-3);z-index:1000;display:flex;align-items:center;gap:8px}
 
+/* Toggles couches carte */
+.t-map-layers{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.95);border:1px solid var(--rule);border-radius:8px;padding:10px 12px;z-index:600;box-shadow:var(--shadow-sm);min-width:180px;font-size:12px}
+.t-map-layers-title{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:8px}
+.t-map-layer{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;color:var(--ink-2)}
+.t-map-layer input{margin:0;cursor:pointer}
+.t-map-layer-dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.t-map-layer-lbl{flex:1}
+.t-map-layer-count{font-size:10px;color:var(--ink-4);font-family:var(--font-mono);font-weight:500}
+.t-map-layer-loading{font-size:10px;color:var(--accent);font-style:italic}
+
 /* Synthesis */
 .synthesis{margin-top:36px;display:grid;grid-template-columns:1fr 1.25fr;gap:28px;align-items:stretch}
 .synth-score-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;padding:26px 28px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
@@ -198,11 +208,14 @@ h2.t-title strong{font-weight:600}
 
 /* Barre de positionnement par indicateur */
 .ind-bar{margin-top:6px;padding:2px 0}
-.ind-bar-track{position:relative;height:6px;border-radius:3px;overflow:visible}
-.ind-bar-gradient{position:absolute;inset:0;border-radius:3px;background:linear-gradient(90deg,#e8c4ba 0%,#eed8bc 50%,#cfddc7 100%)}
-.ind-bar-cursor{position:absolute;top:-3px;width:3px;height:12px;border-radius:1.5px;transform:translateX(-50%);box-shadow:0 1px 2px rgba(0,0,0,.15);transition:left .4s cubic-bezier(.4,0,.2,1)}
-.ind-bar-scale{display:flex;justify-content:space-between;font-size:9px;color:var(--ink-4);margin-top:4px;font-family:var(--font-mono);letter-spacing:.02em;font-weight:500}
-.ind-bar-score{color:var(--ink-2);font-weight:600}
+.ind-bar-row{margin-top:6px}
+.ind-bar-row:first-child{margin-top:0}
+.ind-bar-rowlabel{font-size:9px;text-transform:uppercase;color:var(--ink-3);font-weight:600;letter-spacing:.05em;margin-bottom:3px;display:flex;justify-content:space-between;align-items:baseline}
+.ind-bar-rowlabel .rang-val{color:var(--ink-2);font-family:var(--font-mono);letter-spacing:0;font-weight:700;text-transform:none}
+.ind-bar-track{position:relative;height:5px;border-radius:3px;overflow:visible}
+.ind-bar-gradient{position:absolute;inset:0;border-radius:3px;background:linear-gradient(90deg,#e9e5dc 0%,#d6d1c4 100%)}
+.ind-bar-cursor{position:absolute;top:-3px;width:3px;height:11px;border-radius:1.5px;background:var(--ink);transform:translateX(-50%);box-shadow:0 1px 2px rgba(0,0,0,.18);transition:left .4s cubic-bezier(.4,0,.2,1)}
+.ind-bar-sub{font-size:10px;color:var(--ink-3);margin-top:3px}
 
 /* Badge source */
 .src-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.04em;margin-left:6px;vertical-align:middle}
@@ -280,7 +293,10 @@ footer.site-footer{margin-top:60px;padding:28px 0 36px;border-top:1px solid var(
       <div class="pills" id="pills"></div>
     </div>
     <div class="aux-controls">
-      <input type="text" id="codeLibre" placeholder="Ou saisir un code INSEE (5 chiffres) ou SIREN EPCI (9 chiffres)">
+      <div class="search-wrap">
+        <input type="text" id="codeLibre" placeholder="Rechercher un territoire (ex : « imp », « la rochelle », « 241700434 »)" autocomplete="off">
+        <div class="suggest-list" id="suggestList"></div>
+      </div>
       <button id="btnLoadLibre">Charger</button>
       <button class="btn-compare" id="compareBtn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10M7 12h10M7 17h10"/></svg>
@@ -606,11 +622,22 @@ async function fetchContourGeo(code) {
   return null;
 }
 
+// Couches cartographiques (état global)
+const mapLayers = {
+  bpe: {layer: null, loaded: false},
+  tc:  {layer: null, loaded: false},
+  velo:{layer: null, loaded: false},
+};
+
 async function initMap(container, territory, compare) {
   if (mapInstance) { mapInstance.remove(); mapInstance = null; }
+  // Reset des couches
+  Object.keys(mapLayers).forEach(k => {
+    mapLayers[k] = {layer: null, loaded: false};
+  });
   const map = L.map(container, {
-    zoomControl: false, attributionControl: false,
-    dragging: true, scrollWheelZoom: false, doubleClickZoom: true,
+    zoomControl: true, attributionControl: false,
+    dragging: true, scrollWheelZoom: true, doubleClickZoom: true,
     touchZoom: true, keyboard: false, tap: false
   });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {subdomains:'abcd', maxZoom:18}).addTo(map);
@@ -651,6 +678,94 @@ async function initMap(container, territory, compare) {
   } else {
     map.setView([46.5, 2.5], 5);
   }
+
+  // Attacher les toggles de couches
+  bindLayerToggles(territory.code || currentCode);
+}
+
+// Lie les checkboxes aux couches carto
+function bindLayerToggles(code) {
+  ["bpe", "tc", "velo"].forEach(key => {
+    const cb = document.getElementById(`layer-${key}`);
+    if (!cb) return;
+    cb.checked = false;  // toujours repartir avec couches désactivées
+    cb.onchange = async () => {
+      if (cb.checked) {
+        await loadMapLayer(key, code);
+      } else {
+        unloadMapLayer(key);
+      }
+    };
+  });
+}
+
+async function loadMapLayer(layerKey, code) {
+  if (!mapInstance) return;
+  const countEl = document.getElementById(`count-${layerKey}`);
+  countEl.textContent = "chargement…";
+  countEl.className = "t-map-layer-loading";
+
+  try {
+    const url = `${BACKEND}/carto/${code}?layers=${layerKey}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    const geojson = data[layerKey] || {type:"FeatureCollection", features:[]};
+    const n = geojson.features ? geojson.features.length : 0;
+
+    let layer;
+    if (layerKey === "bpe") {
+      layer = L.geoJSON(geojson, {
+        pointToLayer: (feat, latlng) => L.circleMarker(latlng, {
+          radius: 3, fillColor: feat.properties.color || "#888",
+          color: "#fff", weight: 0.5, opacity: 1, fillOpacity: 0.8
+        }),
+        onEachFeature: (f, l) => {
+          const p = f.properties || {};
+          l.bindPopup(`<strong>${p.domaine || "équipement"}</strong><br>${p.typequ || ""}`);
+        }
+      }).addTo(mapInstance);
+    } else if (layerKey === "tc") {
+      layer = L.geoJSON(geojson, {
+        pointToLayer: (feat, latlng) => L.circleMarker(latlng, {
+          radius: 4, fillColor: feat.properties.type === "tram" ? "#e74c3c" : "#2980b9",
+          color: "#fff", weight: 1, opacity: 1, fillOpacity: 0.9
+        }),
+        onEachFeature: (f, l) => {
+          const p = f.properties || {};
+          l.bindPopup(`<strong>${p.name || "Arrêt"}</strong><br>${p.type || ""}`);
+        }
+      }).addTo(mapInstance);
+    } else if (layerKey === "velo") {
+      layer = L.geoJSON(geojson, {
+        style: (feat) => ({
+          color: feat.properties.categorie === "piste_dediee" ? "#27ae60" : "#95a5a6",
+          weight: 2.5, opacity: 0.85
+        }),
+        onEachFeature: (f, l) => {
+          const p = f.properties || {};
+          l.bindPopup(`<strong>${p.categorie === "piste_dediee" ? "Piste dédiée" : "Voie partagée"}</strong><br>${p.name || ""}`);
+        }
+      }).addTo(mapInstance);
+    }
+    mapLayers[layerKey] = {layer, loaded: true};
+    countEl.textContent = n.toLocaleString("fr-FR");
+    countEl.className = "t-map-layer-count";
+  } catch (e) {
+    countEl.textContent = "erreur";
+    countEl.className = "t-map-layer-count";
+    console.error(`Couche ${layerKey} :`, e);
+  }
+}
+
+function unloadMapLayer(layerKey) {
+  const entry = mapLayers[layerKey];
+  if (entry && entry.layer && mapInstance) {
+    mapInstance.removeLayer(entry.layer);
+  }
+  mapLayers[layerKey] = {layer: null, loaded: false};
+  const countEl = document.getElementById(`count-${layerKey}`);
+  if (countEl) countEl.textContent = "";
 }
 
 // ============================================================
@@ -677,7 +792,8 @@ function renderRadar(territory, compare) {
   });
   const dataPts = DIM_ORDER.map((k,i) => {
     const a = angleFor(i);
-    const score = territory.dims[k].score || 0;
+    // Utiliser le score live s'il existe, sinon le démo
+    const score = (typeof territory.dims[k].liveScore === 'number' ? territory.dims[k].liveScore : territory.dims[k].score) || 0;
     const ratio = score/100;
     return [cx + R*ratio*Math.cos(a), cy + R*ratio*Math.sin(a)];
   });
@@ -686,7 +802,7 @@ function renderRadar(territory, compare) {
   if (compare) {
     const cmpPts = DIM_ORDER.map((k,i) => {
       const a = angleFor(i);
-      const score = compare.dims[k].score || 0;
+      const score = (typeof compare.dims[k].liveScore === 'number' ? compare.dims[k].liveScore : compare.dims[k].score) || 0;
       const ratio = score/100;
       return [cx + R*ratio*Math.cos(a), cy + R*ratio*Math.sin(a)];
     });
@@ -780,6 +896,12 @@ function renderTerritory() {
         </div>
         <div class="t-map-wrap">
           <div class="t-map" id="territoryMap"></div>
+          <div class="t-map-layers" id="mapLayers">
+            <div class="t-map-layers-title">Couches</div>
+            <label class="t-map-layer"><input type="checkbox" id="layer-bpe"><span class="t-map-layer-dot" style="background:#d35400"></span><span class="t-map-layer-lbl">Équipements BPE</span><span class="t-map-layer-count" id="count-bpe"></span></label>
+            <label class="t-map-layer"><input type="checkbox" id="layer-tc"><span class="t-map-layer-dot" style="background:#2980b9"></span><span class="t-map-layer-lbl">Arrêts transport</span><span class="t-map-layer-count" id="count-tc"></span></label>
+            <label class="t-map-layer"><input type="checkbox" id="layer-velo"><span class="t-map-layer-dot" style="background:#27ae60"></span><span class="t-map-layer-lbl">Voies cyclables</span><span class="t-map-layer-count" id="count-velo"></span></label>
+          </div>
           <div class="t-map-overlay">
             <div class="t-map-label">Contour officiel</div>
             <div class="t-map-src">geo.api.gouv.fr · OSM/CARTO</div>
@@ -879,28 +1001,41 @@ function renderDim(key, dim, cmpDim, cmpT) {
     </div>`;
 }
 
-// Rend une mini-barre de positionnement pour un indicateur
-// basée sur le score (0-100) et le sens (+1 = plus = mieux ou -1 = moins = mieux)
+// Rend 2 mini-barres de positionnement :
+//  - rang au sein de sa typologie
+//  - rang au niveau national
+// Affiche le rang brut (% de communes ayant une valeur inférieure), sans jugement.
 function renderIndBar(ind) {
-  const score = ind.score;
-  if (typeof score !== 'number') return '';
-  // Position du curseur sur la barre (0-100)
-  const pos = Math.max(5, Math.min(95, score));
-  // Couleur du curseur selon le score
-  const color = score >= 65 ? 'var(--gauge-high)' : score >= 45 ? 'var(--gauge-mid)' : 'var(--gauge-low)';
-  // Tooltip info
-  const sensLabel = ind.sens === -1 ? '↓ mieux' : '↑ mieux';
+  const rT = (typeof ind.rang_typo === 'number') ? ind.rang_typo : null;
+  const rN = (typeof ind.rang_national === 'number') ? ind.rang_national : null;
+  if (rT === null && rN === null) return '';
+
+  const libTypo = ind.libelle_typo || 'sa catégorie';
+  const nT = ind.n_typo ? ind.n_typo.toLocaleString('fr-FR') : null;
+  const nN = ind.n_national ? ind.n_national.toLocaleString('fr-FR') : null;
+
+  const renderRow = (rang, label, detail) => {
+    if (rang === null) return '';
+    const pos = Math.max(1.5, Math.min(98.5, rang));
+    return `
+      <div class="ind-bar-row">
+        <div class="ind-bar-rowlabel">
+          <span>${label}</span>
+          <span class="rang-val">rang ${rang.toFixed(0)}%</span>
+        </div>
+        <div class="ind-bar-track">
+          <div class="ind-bar-gradient"></div>
+          <div class="ind-bar-cursor" style="left:${pos}%"></div>
+        </div>
+        <div class="ind-bar-sub">${detail}</div>
+      </div>
+    `;
+  };
+
   return `
-    <div class="ind-bar" title="Score ${score}/100 · ${sensLabel}">
-      <div class="ind-bar-track">
-        <div class="ind-bar-gradient"></div>
-        <div class="ind-bar-cursor" style="left:${pos}%;background:${color}"></div>
-      </div>
-      <div class="ind-bar-scale">
-        <span>moins bon</span>
-        <span class="ind-bar-score">${score}/100</span>
-        <span>meilleur</span>
-      </div>
+    <div class="ind-bar">
+      ${renderRow(rT, libTypo, nT ? `Parmi ${nT} communes de même typologie` : 'Dans sa typologie')}
+      ${renderRow(rN, 'Ensemble des communes françaises', nN ? `Parmi ${nN} communes au total` : 'Au niveau national')}
     </div>
   `;
 }
@@ -974,6 +1109,101 @@ document.getElementById("btnLoadLibre").onclick = () => {
 document.getElementById("codeLibre").addEventListener("keydown", e => {
   if (e.key === "Enter") document.getElementById("btnLoadLibre").click();
 });
+
+// ============================================================
+// AUTOCOMPLÉTION
+// ============================================================
+(function () {
+  const input = document.getElementById("codeLibre");
+  const list  = document.getElementById("suggestList");
+  const btn   = document.getElementById("btnLoadLibre");
+  if (!input || !list) return;
+
+  let timer = null;
+  let items = [];
+  let activeIdx = -1;
+
+  function hide() { list.classList.remove("on"); list.innerHTML = ""; activeIdx = -1; items = []; }
+
+  function render(results) {
+    items = results; activeIdx = -1;
+    if (!results.length) {
+      list.innerHTML = '<div class="suggest-empty">Aucun résultat</div>';
+      list.classList.add("on");
+      return;
+    }
+    list.innerHTML = results.map((it, i) => `
+      <div class="suggest-item" data-idx="${i}">
+        <div>
+          <span class="suggest-type ${it.type}">${it.type}</span>
+          <span class="suggest-name">${it.libelle}</span>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:2px">${it.sublibelle}</div>
+        </div>
+        <div class="suggest-meta">${it.code}</div>
+      </div>`).join("");
+    list.classList.add("on");
+
+    list.querySelectorAll(".suggest-item").forEach(el => {
+      el.addEventListener("mousedown", (ev) => {
+        ev.preventDefault();
+        pick(items[parseInt(el.dataset.idx)]);
+      });
+    });
+  }
+
+  function pick(item) {
+    input.value = item.code;
+    hide();
+    if (btn) btn.click();  // réutilise la logique de chargement existante
+  }
+
+  function updateActive() {
+    list.querySelectorAll(".suggest-item").forEach((el, i) => {
+      el.classList.toggle("active", i === activeIdx);
+    });
+  }
+
+  async function doSearch(q) {
+    if (!BACKEND) return;
+    try {
+      const r = await fetch(`${BACKEND}/search?q=${encodeURIComponent(q)}&limit=10`);
+      if (!r.ok) return hide();
+      const d = await r.json();
+      render(d.results || []);
+    } catch (e) { hide(); }
+  }
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim();
+    // déjà un code : on laisse passer sans autocomplétion
+    if (/^\d{5}$/.test(q) || /^\d{9}$/.test(q) || /^\d[\dAB]\d{3}$/i.test(q)) return hide();
+    if (q.length < 2) return hide();
+    clearTimeout(timer);
+    timer = setTimeout(() => doSearch(q), 220);
+  });
+
+  input.addEventListener("keydown", (ev) => {
+    if (!list.classList.contains("on") || !items.length) return;
+    if (ev.key === "ArrowDown") {
+      ev.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      updateActive();
+    } else if (ev.key === "ArrowUp") {
+      ev.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, 0);
+      updateActive();
+    } else if (ev.key === "Enter" && activeIdx >= 0) {
+      ev.preventDefault();
+      pick(items[activeIdx]);
+    } else if (ev.key === "Escape") {
+      hide();
+    }
+  });
+
+  document.addEventListener("click", (ev) => {
+    if (ev.target !== input && !list.contains(ev.target)) hide();
+  });
+})();
 
 setBackend(BACKEND);
 loadAndRender();

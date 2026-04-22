@@ -95,3 +95,82 @@ async def resolve(code: str) -> dict:
             "codes_communes": [c["code"] for c in communes],
             "communes": communes,  # détail pour reventilation éventuelle
         }
+
+
+async def search_territoires(q: str, limit: int = 10) -> list[dict]:
+    """
+    Recherche par nom. Renvoie une liste mixte commune + EPCI triée par pertinence
+    (EPCI d'abord si match exact, puis communes par population décroissante).
+
+    Chaque item : {type, code, nom, libelle, population, sublibelle}
+      - libelle   : texte principal affiché (nom du territoire)
+      - sublibelle: ligne secondaire (département / nb communes / etc.)
+    """
+    q = (q or "").strip()
+    if len(q) < 2:
+        return []
+
+    async with httpx.AsyncClient(base_url=GEO_API_BASE) as client:
+        # Requêtes en parallèle : communes + EPCI
+        import asyncio
+        comm_task = _fetch(
+            client, "/communes",
+            {
+                "nom": q,
+                "fields": "nom,code,codeDepartement,codesPostaux,population",
+                "boost": "population",
+                "limit": limit,
+            },
+        )
+        epci_task = _fetch(
+            client, "/epcis",
+            {
+                "nom": q,
+                "fields": "nom,code,type,populationTotale",
+                "limit": max(3, limit // 2),
+            },
+        )
+        try:
+            communes, epcis = await asyncio.gather(comm_task, epci_task)
+        except Exception:
+            communes, epcis = [], []
+
+    results = []
+
+    # EPCI en tête (en général moins nombreux et plus pertinents pour GT BDDe)
+    for e in epcis or []:
+        type_label = {"CA": "Communauté d'agglomération", "CU": "Communauté urbaine",
+                      "CC": "Communauté de communes", "METRO": "Métropole"}.get(e.get("type"), "EPCI")
+        pop = e.get("populationTotale")
+        sub = type_label
+        if pop:
+            sub += f" · {pop:,} hab.".replace(",", " ")
+        results.append({
+            "type": "epci",
+            "code": e["code"],
+            "nom": e["nom"],
+            "libelle": e["nom"],
+            "sublibelle": sub,
+        })
+
+    # Communes
+    for c in communes or []:
+        cp = (c.get("codesPostaux") or [""])[0]
+        dept = c.get("codeDepartement") or ""
+        pop = c.get("population")
+        sub_parts = []
+        if cp:
+            sub_parts.append(cp)
+        if dept:
+            sub_parts.append(f"dép. {dept}")
+        if pop:
+            sub_parts.append(f"{pop:,} hab.".replace(",", " "))
+        results.append({
+            "type": "commune",
+            "code": c["code"],
+            "nom": c["nom"],
+            "libelle": c["nom"],
+            "sublibelle": " · ".join(sub_parts) if sub_parts else "Commune",
+        })
+
+    return results[:limit]

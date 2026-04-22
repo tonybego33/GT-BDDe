@@ -25,7 +25,9 @@ from .services import geo as geo_service
 from .services import gouvernance as gouv_service
 from .services import indicateurs_locaux as local_service
 from .services import bpe as bpe_service
+from .services import filosofi as filosofi_service
 from .services import scoring as scoring_service
+from .services import carto as carto_service
 
 
 # Libellés des 6 dimensions du GT BDDe
@@ -53,6 +55,21 @@ def root():
     return {"app": APP_TITLE, "version": APP_VERSION, "status": "ok"}
 
 
+@app.get("/search")
+async def search(q: str = "", limit: int = 10):
+    """
+    Recherche de territoire par nom (autocomplétion).
+    Exemple : /search?q=imp -> Imphy, Impe...
+    """
+    if not q or len(q.strip()) < 2:
+        return {"results": []}
+    try:
+        results = await geo_service.search_territoires(q.strip(), limit=limit)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Erreur recherche : {e}")
+    return {"results": results}
+
+
 @app.get("/territoire/{code}")
 async def territoire(code: str):
     """Résout un code commune (5 chiffres INSEE) ou SIREN EPCI (9 chiffres)."""
@@ -70,6 +87,7 @@ def indicateurs_def():
     """Renvoie la définition des indicateurs exposés par le service local."""
     return {
         "indicateurs_locaux": local_service.list_indicateurs_def(),
+        "indicateurs_filosofi": filosofi_service.list_indicateurs_def(),
         "indicateurs_gouvernance": gouv_service.INDICATEURS_GOUVERNANCE,
         "dimensions": DIMENSIONS_META,
     }
@@ -99,6 +117,10 @@ async def indicateurs(code: str):
     bpe_indicateurs = bpe_service.get_indicateurs(t)
     bpe_error = bpe_indicateurs.pop("_erreur", None)
 
+    # Récupération des indicateurs Filosofi (socio-économique)
+    filosofi_indicateurs = filosofi_service.get_indicateurs(t)
+    filosofi_error = filosofi_indicateurs.pop("_erreur", None)
+
     # Récupération des indicateurs de gouvernance manuels
     gouv_list = gouv_service.indicateurs_gouvernance(t)
 
@@ -122,6 +144,15 @@ async def indicateurs(code: str):
 
     # Indicateurs BPE (accessibilité)
     for ind_code, ind_data in bpe_indicateurs.items():
+        dim = ind_data.get("dimension")
+        if dim and dim in dimensions:
+            dimensions[dim]["indicateurs"].append({
+                "code": ind_code,
+                **ind_data,
+            })
+
+    # Indicateurs Filosofi (socio-économique)
+    for ind_code, ind_data in filosofi_indicateurs.items():
         dim = ind_data.get("dimension")
         if dim and dim in dimensions:
             dimensions[dim]["indicateurs"].append({
@@ -157,7 +188,9 @@ async def indicateurs(code: str):
 
     # Calcul du scoring (V1 indicatif, à valider avec Fabien)
     try:
-        scoring = scoring_service.get_scoring_for_territoire(t, local_indicateurs, bpe_indicateurs)
+        # Merger les indicateurs Filosofi avec les locaux pour le scoring
+        indicateurs_pour_scoring = {**local_indicateurs, **filosofi_indicateurs}
+        scoring = scoring_service.get_scoring_for_territoire(t, indicateurs_pour_scoring, bpe_indicateurs)
         scoring_error = scoring.get("_erreur")
     except Exception as e:
         scoring = {}
@@ -170,9 +203,16 @@ async def indicateurs(code: str):
             for ind in dim.get("indicateurs", []):
                 code = ind.get("code")
                 if code in scores_ind:
-                    ind["score"] = scores_ind[code]["score"]
-                    ind["quantiles"] = scores_ind[code]["quantiles"]
-                    ind["sens"] = scores_ind[code]["sens"]
+                    s = scores_ind[code]
+                    ind["score"] = s["score"]
+                    ind["score_national"] = s.get("score_national")
+                    ind["rang_typo"] = s.get("rang_typo")
+                    ind["rang_national"] = s.get("rang_national")
+                    ind["libelle_typo"] = s.get("libelle_typo")
+                    ind["n_typo"] = s.get("n_typo")
+                    ind["n_national"] = s.get("n_national")
+                    ind["quantiles"] = s["quantiles"]
+                    ind["sens"] = s["sens"]
 
     # Injecter les scores de dimension
     if "scores_dimensions" in scoring:
@@ -198,6 +238,8 @@ async def indicateurs(code: str):
         response["_warning_indicateurs_locaux"] = local_error
     if bpe_error:
         response["_warning_bpe"] = bpe_error
+    if filosofi_error:
+        response["_warning_filosofi"] = filosofi_error
     if scoring_error:
         response["_warning_scoring"] = scoring_error
     return response
@@ -236,3 +278,26 @@ async def set_gouv(code: str, payload: GouvValueIn):
 def list_gouv_indicateurs():
     """Liste les indicateurs de gouvernance disponibles (définition)."""
     return gouv_service.INDICATEURS_GOUVERNANCE
+
+
+# ---------- Carte : couches BPE, TC, cyclable ----------
+@app.get("/carto/{code}")
+async def carto(code: str, layers: Optional[str] = None):
+    """
+    Renvoie les couches géographiques pour un territoire.
+
+    layers (optionnel) : liste séparée par virgule parmi 'bpe', 'tc', 'velo'
+    Exemple : /carto/241700434?layers=bpe,tc
+    Si omis, renvoie les 3 couches.
+    """
+    try:
+        t = await geo_service.resolve(code)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except LookupError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    requested = None
+    if layers:
+        requested = [x.strip() for x in layers.split(",") if x.strip() in ("bpe", "tc", "velo")]
+    return carto_service.get_layers_for_territoire(t, requested)
