@@ -27,7 +27,7 @@ html{-webkit-font-smoothing:antialiased}
 body{background:var(--bg);background-image:radial-gradient(rgba(20,23,28,.035) 1px,transparent 1px);background-size:22px 22px;color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.5;letter-spacing:-.005em}
 .container{max-width:1280px;margin:0 auto;padding:0 36px}
 
-
+/* Header */
 header.site{position:sticky;top:0;z-index:100;background:rgba(244,242,238,.92);backdrop-filter:saturate(180%) blur(12px);-webkit-backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--rule)}
 .site-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:24px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:18px}
@@ -41,7 +41,7 @@ header.site{position:sticky;top:0;z-index:100;background:rgba(244,242,238,.92);b
 .status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gauge-high);margin-right:6px;box-shadow:0 0 0 3px rgba(88,122,76,.15)}
 .meta-right .tag{padding:4px 10px;background:var(--bg-card);border:1px solid var(--rule);border-radius:100px;font-size:11px;font-weight:500}
 
-
+/* Backend config */
 .backend-config{margin-top:18px;padding:14px 18px;background:#fff8e8;border:1px solid #f0d090;border-radius:8px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:13px}
 .backend-config label{font-weight:600;color:var(--ink-2);white-space:nowrap}
 .backend-config input{flex:1;min-width:280px;padding:8px 11px;border:1px solid var(--rule);border-radius:5px;font-family:var(--font-mono);font-size:12px}
@@ -51,7 +51,7 @@ header.site{position:sticky;top:0;z-index:100;background:rgba(244,242,238,.92);b
 .pill-state.live{background:rgba(88,122,76,.15);color:var(--gauge-high)}
 .pill-state.off{background:rgba(193,75,50,.12);color:var(--gauge-low)}
 
-  
+/* Hero */
 .hero{padding:60px 0 30px;max-width:920px;position:relative}
 .hero::before{content:"";position:absolute;top:60px;left:-36px;width:3px;height:56px;background:var(--accent);border-radius:2px}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:22px}
@@ -62,7 +62,7 @@ h1.hero-title em{font-style:normal;background:linear-gradient(180deg,transparent
 .hero-sub{margin-top:18px;max-width:700px;font-size:16px;color:var(--ink-2);line-height:1.55}
 .hero-sub strong{font-weight:600;color:var(--ink)}
 
-  
+/* Selector */
 .selector-wrap{margin-top:34px;display:flex;flex-direction:column;gap:14px}
 .selector{display:flex;background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;overflow:hidden;box-shadow:var(--shadow-sm)}
 .selector-label{padding:18px 22px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;border-right:1px solid var(--rule);display:flex;align-items:center;background:var(--bg-soft);min-width:170px}
@@ -89,7 +89,7 @@ h1.hero-title em{font-style:normal;background:linear-gradient(180deg,transparent
 .compare-bar select option{color:var(--ink);background:var(--bg-card)}
 .compare-bar .close-btn{margin-left:auto;background:transparent;border:none;color:var(--bg-card);cursor:pointer;font-size:14px;opacity:.7}
 
-
+/* Territory */
 .t-view{margin-top:48px;animation:fadeIn .4s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .t-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:stretch;padding-bottom:36px;border-bottom:1px solid var(--rule)}
@@ -109,7 +109,7 @@ h2.t-title strong{font-weight:600}
 .t-meta-src.demo{color:var(--ink-4)}
 .t-narrative{margin-top:20px;font-size:15px;color:var(--ink-2);line-height:1.55;font-style:italic}
 
-
+/* Map */
 .t-map-wrap{position:relative;background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-md);min-height:380px}
 .t-map{width:100%;height:100%;min-height:380px;background:var(--bg-soft)}
 .leaflet-container{background:var(--bg-soft);font-family:var(--font-ui) !important}
@@ -118,7 +118,7 @@ h2.t-title strong{font-weight:600}
 .t-map-src{font-size:10px;color:var(--ink-4);font-family:var(--font-mono)}
 .t-map-loader{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--ink-3);z-index:1000;display:flex;align-items:center;gap:8px}
 
-
+/* Synthesis */
 .synthesis{margin-top:36px;display:grid;grid-template-columns:1fr 1.25fr;gap:28px;align-items:stretch}
 .synth-score-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;padding:26px 28px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
 .synth-score-card::after{content:"";position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,var(--accent-tint) 0%,transparent 70%);pointer-events:none}
@@ -140,7 +140,7 @@ h2.t-title strong{font-weight:600}
 .synth-compare{margin-top:14px;padding-top:14px;border-top:1px dashed var(--rule);font-size:13px;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center}
 .synth-compare-val{font-weight:600;color:var(--blue)}
 
-
+/* Radar */
 .radar-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;padding:26px 28px 18px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
 .radar-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .radar-head-title{font-size:20px;font-weight:600;letter-spacing:-.01em}
@@ -152,7 +152,7 @@ h2.t-title strong{font-weight:600}
 .radar-svg-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:4px 0;min-height:280px}
 .radar-svg{max-width:100%;height:auto}
 
-
+/* Dims */
 .dims-section{margin-top:36px}
 .dims-section-title{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
 .dims-section-title h3{font-size:20px;font-weight:600;letter-spacing:-.01em}
@@ -186,26 +186,35 @@ h2.t-title strong{font-weight:600}
 .gauge-scale{display:flex;justify-content:space-between;font-size:9px;color:var(--ink-4);margin-top:5px;font-family:var(--font-mono);font-weight:500}
 
 .dim-indicators{display:flex;flex-direction:column;margin-top:4px;border-top:1px solid var(--rule-2);padding-top:6px}
-.ind{display:grid;grid-template-columns:1fr auto;gap:12px;padding:6px 0;align-items:baseline;border-bottom:1px dashed var(--rule-2);font-size:13px}
-.ind:last-child{border-bottom:none}
-.ind-label{color:var(--ink-2);line-height:1.3}
-.ind-src{display:block;font-size:9px;color:var(--ink-4);letter-spacing:.06em;text-transform:uppercase;font-weight:500;margin-top:2px}
+.ind{padding:8px 0;border-top:1px dashed var(--rule-2);font-size:13px}
+.ind:first-child{border-top:none}
+.ind-header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ind-label{color:var(--ink-2);line-height:1.3;flex:1}
+.ind-src{display:block;font-size:9px;color:var(--ink-4);letter-spacing:.06em;text-transform:uppercase;font-weight:500;margin-top:4px}
 .ind-val-wrap{text-align:right;white-space:nowrap}
 .ind-val{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
 .ind-val.na{color:var(--ink-4);font-weight:400;font-style:italic}
 .ind-cmp{display:block;font-size:11px;color:var(--blue);margin-top:2px;font-weight:500}
 
+/* Barre de positionnement par indicateur */
+.ind-bar{margin-top:6px;padding:2px 0}
+.ind-bar-track{position:relative;height:6px;border-radius:3px;overflow:visible}
+.ind-bar-gradient{position:absolute;inset:0;border-radius:3px;background:linear-gradient(90deg,#e8c4ba 0%,#eed8bc 50%,#cfddc7 100%)}
+.ind-bar-cursor{position:absolute;top:-3px;width:3px;height:12px;border-radius:1.5px;transform:translateX(-50%);box-shadow:0 1px 2px rgba(0,0,0,.15);transition:left .4s cubic-bezier(.4,0,.2,1)}
+.ind-bar-scale{display:flex;justify-content:space-between;font-size:9px;color:var(--ink-4);margin-top:4px;font-family:var(--font-mono);letter-spacing:.02em;font-weight:500}
+.ind-bar-score{color:var(--ink-2);font-weight:600}
 
+/* Badge source */
 .src-badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.04em;margin-left:6px;vertical-align:middle}
 .src-live{background:rgba(88,122,76,.15);color:var(--gauge-high)}
 .src-demo{background:rgba(168,173,181,.2);color:var(--ink-3)}
 .src-todo{background:rgba(216,152,58,.15);color:#a67126}
 
-
+/* Data-source legend */
 .data-legend{margin-top:20px;padding:12px 18px;background:var(--bg-soft);border:1px dashed var(--rule);border-radius:6px;font-size:12px;color:var(--ink-3);line-height:1.6}
 .data-legend strong{color:var(--ink)}
 
-
+/* Footer */
 footer.site-footer{margin-top:60px;padding:28px 0 36px;border-top:1px solid var(--rule);display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;font-size:12px;color:var(--ink-3)}
 .footer-mark{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink)}
 .footer-mark .a{width:6px;height:16px;background:var(--accent);border-radius:1px}
@@ -297,14 +306,15 @@ footer.site-footer{margin-top:60px;padding:28px 0 36px;border-top:1px solid var(
   <footer class="site-footer">
     <div class="footer-mark"><span class="a"></span>AREP</div>
     <div class="footer-version"><span class="vdot"></span>GT BDDe · V0.3 · avril 2026</div>
-    <div class="footer-meta">Avril 2026 Tony BEGO · GT BDDe · AREP / usage interne / prototype non diffusable</div>
+    <div class="footer-meta">usage interne · prototype non diffusable</div>
   </footer>
 
 </main>
 
 <script>
-
-  
+// ============================================================
+// CONFIG BACKEND
+// ============================================================
 let BACKEND = localStorage.getItem("gtbdde_backend") || "";
 
 function setBackend(url) {
@@ -341,8 +351,11 @@ document.getElementById("btnSaveBackend").onclick = () => {
   renderAll();
 };
 
-
-  
+// ============================================================
+// DONNÉES DÉMO (héritées V0.2 — illustratives pour les 5 agglos)
+// Seuls les scores et indicateurs non-branchés sont en démo.
+// Pop/superficie/communes/densité viennent du backend.
+// ============================================================
 const TERRITORIES_DEMO = {
   "241700434": {
     name: "CA de La Rochelle", kind: "Communauté d'Agglomération", centerName: "La Rochelle",
@@ -445,15 +458,17 @@ const DIM_META = {
 };
 const DIM_SHORT = {struct:"Structure", access:"Accessibilité", mob:"Mobilité", env:"Environnement", socio:"Socio-éco", gouv:"Gouvernance"};
 
-
-  
+// ============================================================
+// STATE
+// ============================================================
 let currentCode = "241700434";
 let compareCode = null;
 let liveData = {};   // { code: { territoire: {...}, indicateurs: {...} } }
 let mapInstance = null;
 
-
-  
+// ============================================================
+// BACKEND CALLS
+// ============================================================
 async function fetchTerritoire(code) {
   if (!BACKEND) return null;
   try {
@@ -466,8 +481,9 @@ async function fetchTerritoire(code) {
   return null;
 }
 
-
-  
+// ============================================================
+// HELPERS
+// ============================================================
 function gradeFromScore(s) { if (s >= 65) return "high"; if (s >= 45) return "mid"; return "low"; }
 function gradeLabel(g) { return g === "high" ? "Performant" : g === "mid" ? "Intermédiaire" : "Fragile"; }
 function fmtNum(n, d=0) { return n == null ? "—" : Number(n).toLocaleString("fr-FR", {maximumFractionDigits: d}); }
@@ -478,8 +494,10 @@ function badge(status) {
   return "";
 }
 
-
-  
+// ============================================================
+// MERGE LIVE + DEMO
+// Retourne un objet territory unifié à afficher.
+// ============================================================
 function buildDisplayData(code) {
   const demo = TERRITORIES_DEMO[code] || null;
   const live = liveData[code] || null;
@@ -497,8 +515,7 @@ function buildDisplayData(code) {
     }
   };
 
- 
-  
+  // Surcharge avec live (pop, superficie, contour, densité)
   if (live && live.territoire) {
     base.code = live.territoire.code;
     base.population = live.territoire.population;
@@ -520,6 +537,14 @@ function buildDisplayData(code) {
     // NOUVEAU FORMAT : on remplace tous les indicateurs des dimensions par les vrais
     // si disponibles. L'ancien format DEMO est conservé uniquement pour les dimensions
     // encore non branchées (access, mob).
+    if (live.indicateurs && live.indicateurs.score_global && typeof live.indicateurs.score_global.valeur === 'number') {
+      const sg = live.indicateurs.score_global;
+      base.synth.score = Math.round(sg.valeur);
+      base.synth.grade = sg.grade || base.synth.grade;
+      base.synth.label = sg.libelle_typo || base.synth.label;
+      base.synth._isLive = true;
+      base.synth.typo = sg.groupe_typo;
+    }
     if (live.indicateurs && live.indicateurs.dimensions) {
       const liveDims = live.indicateurs.dimensions;
       const dimKeyMap = {
@@ -540,8 +565,18 @@ function buildDisplayData(code) {
             status: ind.statut === "ok" ? "live"
                    : ind.statut === "rempli" ? "live"
                    : ind.statut === "a_remplir" ? "todo"
-                   : "todo"
+                   : "todo",
+            // Nouveau : on passe les données de scoring si présentes
+            score: typeof ind.score === 'number' ? ind.score : null,
+            quantiles: ind.quantiles || null,
+            sens: ind.sens != null ? ind.sens : null,
+            rawValue: ind.valeur
           }));
+          // Score de dimension si présent
+          if (typeof liveDim.score === 'number') {
+            base.dims[ourKey].liveScore = liveDim.score;
+            base.dims[ourKey].liveGrade = liveDim.grade;
+          }
           // Marquer que cette dim a des données live
           base.dims[ourKey]._hasLive = true;
         }
@@ -556,9 +591,9 @@ function buildDisplayData(code) {
   return base;
 }
 
-
-
-  
+// ============================================================
+// MAP
+// ============================================================
 async function fetchContourGeo(code) {
   // Fallback direct sur geo.api.gouv.fr si pas de backend
   const isCommune = /^\d[\dAB]\d{3}$/i.test(code);
@@ -618,9 +653,9 @@ async function initMap(container, territory, compare) {
   }
 }
 
-
-
-  
+// ============================================================
+// RADAR
+// ============================================================
 function renderRadar(territory, compare) {
   const W = 340, H = 300, cx = W/2, cy = H/2+5, R = 110;
   const rings = [0.2, 0.4, 0.6, 0.8, 1.0];
@@ -672,9 +707,9 @@ function renderRadar(territory, compare) {
   </svg>`;
 }
 
-
-
-  
+// ============================================================
+// RENDER
+// ============================================================
 function renderPills() {
   const el = document.getElementById("pills"); el.innerHTML = "";
   Object.entries(TERRITORIES_DEMO).forEach(([code, t]) => {
@@ -755,9 +790,9 @@ function renderTerritory() {
       <div class="synthesis">
         <div class="synth-score-card">
           <div>
-            <div class="synth-label">Indice synthétique (démo — à recalculer)</div>
+            <div class="synth-label">${t.synth._isLive ? `Indice synthétique · comparaison avec les territoires de même typologie` : 'Indice synthétique (démo — à recalculer)'}</div>
             <div class="synth-title">${t.synth.label}</div>
-            <div class="synth-desc">${t.synth.desc}</div>
+            <div class="synth-desc">${t.synth._isLive ? 'Scoring V1 indicatif basé sur les quantiles de la typologie INSEE (grand pôle, pôle moyen, multipolarisé, hors influence). À valider avec Fabien.' : t.synth.desc}</div>
           </div>
           <div>
             <div class="synth-score-block">
@@ -771,7 +806,7 @@ function renderTerritory() {
           <div class="radar-head">
             <div>
               <div class="radar-head-title">Vue synthétique · 6 dimensions</div>
-              <div class="radar-head-sub">Scores 0–100 · démo</div>
+              <div class="radar-head-sub">Scores 0–100 ${t.synth._isLive ? '· V1 indicative' : '· démo'}</div>
             </div>
             ${radarLegend}
           </div>
@@ -797,7 +832,12 @@ function renderTerritory() {
 
 function renderDim(key, dim, cmpDim, cmpT) {
   const meta = DIM_META[key];
-  const score = dim.score;
+  // Préférer le score live s'il est dispo, sinon le démo
+  const score = typeof dim.liveScore === 'number' ? Math.round(dim.liveScore) : dim.score;
+  const isLiveScore = typeof dim.liveScore === 'number';
+  // Si on a des indicateurs live mais pas de score agrégé, on est quand même en mode "live partiel"
+  const hasLiveInds = Array.isArray(dim.indicators) && dim.indicators.some(i => i.status === 'live');
+  const scoreLabel = isLiveScore ? 'Score' : (hasLiveInds ? 'Score' : 'Score démo');
   const grade = score != null ? gradeFromScore(score) : "mid";
   const cmpMarker = cmpDim && cmpDim.score != null ? `<div class="gauge-marker-cmp" style="left:${cmpDim.score}%"></div>` : "";
   return `
@@ -805,7 +845,7 @@ function renderDim(key, dim, cmpDim, cmpT) {
       <div class="dim-head">
         <div><div class="dim-num">${meta.num}</div><div class="dim-icon">${meta.icon}</div></div>
         <div class="dim-score-block">
-          <div class="dim-score-label">Score démo</div>
+          <div class="dim-score-label">${scoreLabel}</div>
           <div class="dim-score-val ${score == null ? 'na' : ''}">${score == null ? '—' : score}<span class="s">/100</span></div>
         </div>
       </div>
@@ -821,19 +861,48 @@ function renderDim(key, dim, cmpDim, cmpT) {
       <div class="dim-indicators">
         ${dim.indicators.map((ind, i) => {
           const cmpInd = cmpDim && cmpDim.indicators ? cmpDim.indicators[i] : null;
+          // Barre de positionnement par rapport aux quantiles si dispo
+          const posBar = (typeof ind.score === 'number') ? renderIndBar(ind) : '';
           return `<div class="ind">
-            <div>
+            <div class="ind-header">
               <div class="ind-label">${ind.label} ${badge(ind.status || 'todo')}</div>
-              <span class="ind-src">${ind.src}</span>
+              <div class="ind-val-wrap">
+                <span class="ind-val ${ind.val === 'À remplir' || ind.val === '—' ? 'na' : ''}">${ind.val}</span>
+                ${cmpInd ? `<span class="ind-cmp">${(cmpT.nom_live || cmpT.name).split(' ')[0]} · ${cmpInd.val}</span>` : ""}
+              </div>
             </div>
-            <div class="ind-val-wrap">
-              <span class="ind-val ${ind.val === 'À remplir' || ind.val === '—' ? 'na' : ''}">${ind.val}</span>
-              ${cmpInd ? `<span class="ind-cmp">${(cmpT.nom_live || cmpT.name).split(' ')[0]} · ${cmpInd.val}</span>` : ""}
-            </div>
+            ${posBar}
+            <span class="ind-src">${ind.src}</span>
           </div>`;
         }).join("")}
       </div>
     </div>`;
+}
+
+// Rend une mini-barre de positionnement pour un indicateur
+// basée sur le score (0-100) et le sens (+1 = plus = mieux ou -1 = moins = mieux)
+function renderIndBar(ind) {
+  const score = ind.score;
+  if (typeof score !== 'number') return '';
+  // Position du curseur sur la barre (0-100)
+  const pos = Math.max(5, Math.min(95, score));
+  // Couleur du curseur selon le score
+  const color = score >= 65 ? 'var(--gauge-high)' : score >= 45 ? 'var(--gauge-mid)' : 'var(--gauge-low)';
+  // Tooltip info
+  const sensLabel = ind.sens === -1 ? '↓ mieux' : '↑ mieux';
+  return `
+    <div class="ind-bar" title="Score ${score}/100 · ${sensLabel}">
+      <div class="ind-bar-track">
+        <div class="ind-bar-gradient"></div>
+        <div class="ind-bar-cursor" style="left:${pos}%;background:${color}"></div>
+      </div>
+      <div class="ind-bar-scale">
+        <span>moins bon</span>
+        <span class="ind-bar-score">${score}/100</span>
+        <span>meilleur</span>
+      </div>
+    </div>
+  `;
 }
 
 function renderCompareControls() {
@@ -865,8 +934,9 @@ function renderCompareControls() {
   document.getElementById("closeCompare").onclick = () => { compareCode = null; loadAndRender(); };
 }
 
-
-  
+// ============================================================
+// MAIN
+// ============================================================
 async function loadAndRender() {
   // Charger les données live pour currentCode et compareCode si backend dispo
   if (BACKEND) {
@@ -894,7 +964,9 @@ function renderAll() {
   renderCompareControls();
 }
 
-
+// ============================================================
+// BOOT
+// ============================================================
 document.getElementById("btnLoadLibre").onclick = () => {
   const code = document.getElementById("codeLibre").value.trim();
   if (code) { currentCode = code; compareCode = null; loadAndRender(); }

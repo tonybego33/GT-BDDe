@@ -24,6 +24,8 @@ from .config import APP_TITLE, APP_VERSION
 from .services import geo as geo_service
 from .services import gouvernance as gouv_service
 from .services import indicateurs_locaux as local_service
+from .services import bpe as bpe_service
+from .services import scoring as scoring_service
 
 
 # Libellés des 6 dimensions du GT BDDe
@@ -93,6 +95,10 @@ async def indicateurs(code: str):
     local_indicateurs = local_service.get_indicateurs(t)
     local_error = local_indicateurs.pop("_erreur", None)
 
+    # Récupération des indicateurs BPE (accessibilité)
+    bpe_indicateurs = bpe_service.get_indicateurs(t)
+    bpe_error = bpe_indicateurs.pop("_erreur", None)
+
     # Récupération des indicateurs de gouvernance manuels
     gouv_list = gouv_service.indicateurs_gouvernance(t)
 
@@ -107,6 +113,15 @@ async def indicateurs(code: str):
 
     # Indicateurs locaux
     for ind_code, ind_data in local_indicateurs.items():
+        dim = ind_data.get("dimension")
+        if dim and dim in dimensions:
+            dimensions[dim]["indicateurs"].append({
+                "code": ind_code,
+                **ind_data,
+            })
+
+    # Indicateurs BPE (accessibilité)
+    for ind_code, ind_data in bpe_indicateurs.items():
         dim = ind_data.get("dimension")
         if dim and dim in dimensions:
             dimensions[dim]["indicateurs"].append({
@@ -140,6 +155,32 @@ async def indicateurs(code: str):
                 "mob": "En attente discussion avec Félix Pouchain (outil Mobility).",
             }[dim_code]
 
+    # Calcul du scoring (V1 indicatif, à valider avec Fabien)
+    try:
+        scoring = scoring_service.get_scoring_for_territoire(t, local_indicateurs, bpe_indicateurs)
+        scoring_error = scoring.get("_erreur")
+    except Exception as e:
+        scoring = {}
+        scoring_error = str(e)
+
+    # Injecter les scores par indicateur DANS les indicateurs (pour l'affichage frontend)
+    if "scores_indicateurs" in scoring:
+        scores_ind = scoring["scores_indicateurs"]
+        for dim_code, dim in dimensions.items():
+            for ind in dim.get("indicateurs", []):
+                code = ind.get("code")
+                if code in scores_ind:
+                    ind["score"] = scores_ind[code]["score"]
+                    ind["quantiles"] = scores_ind[code]["quantiles"]
+                    ind["sens"] = scores_ind[code]["sens"]
+
+    # Injecter les scores de dimension
+    if "scores_dimensions" in scoring:
+        for dim_code, score_dim in scoring["scores_dimensions"].items():
+            if dim_code in dimensions and score_dim["score"] is not None:
+                dimensions[dim_code]["score"] = score_dim["score"]
+                dimensions[dim_code]["grade"] = score_dim["grade"]
+
     response = {
         "territoire": {
             "type": t["type"],
@@ -150,9 +191,15 @@ async def indicateurs(code: str):
             "nb_communes": t.get("nb_communes"),
         },
         "dimensions": dimensions,
+        "score_global": scoring.get("score_global"),
+        "scoring_meta": scoring.get("meta"),
     }
     if local_error:
         response["_warning_indicateurs_locaux"] = local_error
+    if bpe_error:
+        response["_warning_bpe"] = bpe_error
+    if scoring_error:
+        response["_warning_scoring"] = scoring_error
     return response
 
 
