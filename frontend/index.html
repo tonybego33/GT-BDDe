@@ -91,6 +91,18 @@ body {
 
 .wrap { max-width: 1320px; margin: 0 auto; padding: 0 40px; }
 
+/* Garde-fou ultra-spécifique : la section indicateurs DOIT être contrainte */
+#indicators-details-block {
+  max-width: 1320px !important;
+  width: auto !important;
+  margin: 60px auto 0 !important;
+  padding: 0 40px !important;
+  box-sizing: border-box !important;
+}
+@media (max-width: 640px) {
+  #indicators-details-block { padding: 0 24px !important; }
+}
+
 /* ───── Animations d'entrée globales ───── */
 @keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
@@ -997,7 +1009,6 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; border: none
       <button class="nav-link" data-tab="methodologie">Méthodologie</button>
       <button class="nav-link" data-tab="indicateurs">Indicateurs</button>
       <button class="nav-link" data-tab="ressources">Ressources</button>
-      <button class="nav-link" data-tab="faq">FAQ</button>
     </nav>
 
     <div class="header-aux">
@@ -1005,6 +1016,9 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; border: none
     </div>
   </div>
 </header>
+
+<!-- ═══════════════ TAB CONTENT : DIAGNOSTIC ═══════════════ -->
+<div class="tab-content" data-tab-content="diagnostic">
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      HERO — promesse d'action + recherche
@@ -1069,17 +1083,13 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; border: none
         </div>
       </div>
       <div class="identity-right">
-        <button class="btn btn-ghost">
+        <button class="btn btn-ghost" id="btnCompareTop">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg>
           Comparer
         </button>
-        <button class="btn btn-ghost">
+        <button class="btn btn-ghost" id="btnExport">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
           Exporter
-        </button>
-        <button class="btn btn-primary">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9M4 20l6-6 4 4L22 6"/></svg>
-          Saisir gouvernance
         </button>
       </div>
     </div>
@@ -1211,17 +1221,11 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; border: none
               <span class="map-head-sub">Contour officiel IGN · 28 communes</span>
             </div>
             <div class="map-head-layers">
-              <button class="layer-chip is-active" data-layer="contour">
-                <span class="layer-chip-dot" style="background:#c14a2e"></span>Contour
-              </button>
-              <button class="layer-chip" data-layer="bpe">
-                <span class="layer-chip-dot" style="background:#2a4a6f"></span>Équipements
-              </button>
               <button class="layer-chip" data-layer="tc">
-                <span class="layer-chip-dot" style="background:#587a4c"></span>Transports
+                <span class="layer-chip-dot" style="background:#587a4c"></span> Arrêts de Transports
               </button>
               <button class="layer-chip" data-layer="velo">
-                <span class="layer-chip-dot" style="background:#b5882b"></span>Cyclables
+                <span class="layer-chip-dot" style="background:#b5882b"></span>Pistes Cyclables
               </button>
             </div>
           </div>
@@ -1325,14 +1329,11 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; border: none
         </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════
          DÉTAIL INDICATEURS PAR DIMENSION
          ═══════════════════════════════════════════════════════════════════ -->
-    <div class="details-block">
+    <div class="details-block" id="indicators-details-block">
       <div class="section-head">
         <div>
           <span class="section-kicker">Détail</span>
@@ -1340,12 +1341,13 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; border: none
           <p class="section-lede">Chaque indicateur est positionné sur une échelle qui combine agglos similaires et moyenne nationale, pour transformer un chiffre brut en repère lisible.</p>
         </div>
         <div class="details-filter">
-          <button class="filter-chip is-active">Toutes</button>
-          <button class="filter-chip">Structure</button>
-          <button class="filter-chip">Accessibilité</button>
-          <button class="filter-chip">Environnement</button>
-          <button class="filter-chip">Socio-éco</button>
-          <button class="filter-chip">Gouvernance</button>
+          <button class="filter-chip is-active" data-filter="all">Toutes</button>
+          <button class="filter-chip" data-filter="struct">Structure</button>
+          <button class="filter-chip" data-filter="access">Accessibilité</button>
+          <button class="filter-chip" data-filter="env">Environnement</button>
+          <button class="filter-chip" data-filter="socio">Socio-éco</button>
+          <button class="filter-chip" data-filter="gouv">Gouvernance</button>
+          <button class="filter-chip filter-customize" id="btnPickIndicators">⚙ Choisir</button>
         </div>
       </div>
 
@@ -1358,6 +1360,273 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; border: none
 
   </div>
 </section>
+
+</div><!-- /tab-content diagnostic -->
+
+<!-- ═══════════════ TAB CONTENT : MÉTHODOLOGIE ═══════════════ -->
+<div class="tab-content" data-tab-content="methodologie" hidden>
+  <section class="content-page">
+    <div class="wrap">
+      <div class="content-inner">
+        <div class="eyebrow"><span class="eyebrow-bar"></span>Note de méthodologie</div>
+        <h1 class="content-title"><em>Comment</em><br>fonctionne BDDe.</h1>
+        <p class="content-lede">
+          BDDe est un outil de diagnostic territorial multicritère qui calcule, pour un territoire donné, un score sur six dimensions environnementales et socio-économiques, en le comparant à des territoires similaires.
+        </p>
+
+        <div class="content-warning">
+          <strong>⚠ Prototype en cours de calibrage</strong>
+          <p>Le scoring affiché actuellement est <strong>provisoire et indicatif</strong>. Les pondérations entre indicateurs et entre dimensions n'ont pas encore été validées par le GT BDDe. Les sens d'optimisation de plusieurs indicateurs restent à arbitrer. <strong>Aucune conclusion opérationnelle ne doit être tirée des scores actuels.</strong> Cette version sert uniquement à éprouver l'architecture technique et à supporter la discussion méthodologique en interne.</p>
+        </div>
+
+        <h2 class="content-h2">Principe général</h2>
+        <p>Pour chaque indicateur, l'outil :</p>
+        <ol class="content-list">
+          <li>récupère la valeur du territoire (commune ou EPCI) ;</li>
+          <li>la situe parmi les territoires de même typologie INSEE (CATAEU2010 — Aires d'Attraction des Villes 2010) ;</li>
+          <li>calcule un rang percentile (0 = pire, 100 = meilleur) ;</li>
+          <li>traduit ce rang en score 0-100 selon le sens de l'indicateur (« plus c'est élevé, mieux c'est » ou l'inverse).</li>
+        </ol>
+
+        <h2 class="content-h2">Typologie de référence</h2>
+        <p>Les communes françaises sont regroupées en quatre catégories : <em>Grand pôle urbain et couronne</em>, <em>Pôle moyen ou petit</em>, <em>Territoire multipolarisé</em>, <em>Hors influence des pôles</em>. Pour les EPCI, la typologie retenue est celle pondérée par la population des communes membres. Cette typologie est en discussion : la transition vers la typologie AAV 2020 (qui remplace officiellement CATAEU2010) sera tranchée avec Fabien Rosa.</p>
+
+        <h2 class="content-h2">Dimensions et pondérations actuelles</h2>
+        <p>Six dimensions structurent le diagnostic. Pondérations <strong>provisoires</strong> dans le score global :</p>
+        <ul class="content-list">
+          <li><strong>Structure urbaine</strong> (20 %) : densité, artificialisation, morphologie</li>
+          <li><strong>Accessibilité aux équipements</strong> (20 %) : équipements BPE par habitant</li>
+          <li><strong>Mobilité</strong> (0 %) : à brancher avec l'outil Mobility de Félix Pouchain (AREP Lyon)</li>
+          <li><strong>Performance environnementale</strong> (30 %) : émissions GES, consommation énergétique</li>
+          <li><strong>Structure socio-économique</strong> (10 %) : revenu, pauvreté, inégalités</li>
+          <li><strong>Gouvernance</strong> (0 %) : saisie manuelle, hors score global pour l'instant</li>
+        </ul>
+        <p>Ces pondérations sont volontairement déséquilibrées vers l'environnement, conformément à la finalité du GT (objectiver le lien entre organisation territoriale et empreinte carbone). Elles seront revues collectivement.</p>
+
+        <h2 class="content-h2">Limites assumées</h2>
+        <ul class="content-list">
+          <li>L'absence de données mobilité fait reposer l'évaluation sur des proxies (artif, GES transport).</li>
+          <li>Les indicateurs Filosofi sont rapportés à l'échelle commune et agrégés simplement à l'EPCI : ce n'est pas une vraie consolidation EPCI.</li>
+          <li>La dimension Gouvernance dépend entièrement de la saisie manuelle et reste donc partielle tant que l'équipe ne l'a pas remplie.</li>
+        </ul>
+
+        <div class="content-meta">Document de travail · prototype V0.4 · avril 2026 · à valider avec le GT BDDe</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════ TAB CONTENT : INDICATEURS ═══════════════ -->
+<div class="tab-content" data-tab-content="indicateurs" hidden>
+  <section class="content-page">
+    <div class="wrap">
+      <div class="content-inner">
+        <div class="eyebrow"><span class="eyebrow-bar"></span>Catalogue d'indicateurs</div>
+        <h1 class="content-title">Les indicateurs<br><em>du diagnostic</em>.</h1>
+        <p class="content-lede">
+          BDDe agrège aujourd'hui une trentaine d'indicateurs branchés à des sources publiques officielles, plus une poignée d'indicateurs de gouvernance saisis manuellement par l'équipe.
+        </p>
+
+        <h2 class="content-h2">Structure urbaine</h2>
+        <p>Densité brute, densité sur zones urbanisées (Corine Land Cover), artificialisation 2009-2023 et 2015-2021, part de l'artificialisation consacrée à l'habitat. Sources : INSEE, IGN OCS GE, Portail national de l'artificialisation des sols, Corine Land Cover.</p>
+
+        <h2 class="content-h2">Accessibilité aux équipements</h2>
+        <p>Nombre d'équipements de la Base Permanente des Équipements (BPE) INSEE 2024, par 10 000 habitants, dans cinq familles : commerces, santé et action sociale, enseignement, sports et culture, et le total. La consolidation EPCI somme les équipements et la population de toutes les communes membres.</p>
+
+        <h2 class="content-h2">Mobilité</h2>
+        <p>En attente de branchement avec l'outil interne <em>Mobility</em> d'AREP. Indicateurs cibles : part modale de la voiture, taux de motorisation, distance moyenne domicile-travail, fréquence des transports en commun.</p>
+
+        <h2 class="content-h2">Performance environnementale</h2>
+        <p>Émissions de gaz à effet de serre (totales et transport routier) par habitant, consommation énergétique par habitant. Sources : ADEME Inventaire GES (IGT), RTE / GRDF pour les flux d'énergie.</p>
+
+        <h2 class="content-h2">Structure socio-économique</h2>
+        <p>Revenu médian disponible par unité de consommation, taux de pauvreté (seuil 60 %), rapport interdécile D9/D1, part des ménages imposés, part d'actifs occupés. Source : INSEE Filosofi 2021 + Recensement de la population 2021.</p>
+
+        <h2 class="content-h2">Gouvernance</h2>
+        <p>Sept indicateurs renseignés manuellement par l'équipe GT BDDe pour chaque territoire : adoption d'un PCAET et année, plan vélo structurant, kilomètres de pistes cyclables structurantes, budget mobilité par habitant, politique de rues aux écoles, puissance photovoltaïque installée.</p>
+
+        <div class="content-meta">Une fiche détaillée par indicateur (méthode de calcul, périmètre, mise à jour) sera ajoutée prochainement.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════ TAB CONTENT : RESSOURCES ═══════════════ -->
+<div class="tab-content" data-tab-content="ressources" hidden>
+  <section class="content-page">
+    <div class="wrap">
+      <div class="content-inner">
+        <div class="eyebrow"><span class="eyebrow-bar"></span>Ressources & sources</div>
+        <h1 class="content-title">Sources<br><em>& crédits</em>.</h1>
+        <p class="content-lede">
+          BDDe s'appuie exclusivement sur des données publiques mises à disposition par des opérateurs publics français. Voici les sources mobilisées.
+        </p>
+
+        <h2 class="content-h2">Sources de données</h2>
+        <ul class="content-list">
+          <li><strong>INSEE</strong> — Recensement de la population 2021, Base Permanente des Équipements (BPE) 2024, Filosofi 2021 (revenus localisés). Licence Ouverte Etalab 2.0. <a href="https://www.insee.fr" target="_blank" rel="noopener">insee.fr</a></li>
+          <li><strong>ADEME</strong> — Inventaire territorial des émissions de gaz à effet de serre (IGT). Licence Ouverte. <a href="https://www.ademe.fr" target="_blank" rel="noopener">ademe.fr</a></li>
+          <li><strong>IGN</strong> — Admin Express (limites administratives), OCS GE (occupation des sols à grande échelle). Licence Ouverte 2.0. <a href="https://www.ign.fr" target="_blank" rel="noopener">ign.fr</a></li>
+          <li><strong>geo.api.gouv.fr</strong> — Référentiel des communes et EPCI français. Service public Etalab. <a href="https://geo.api.gouv.fr" target="_blank" rel="noopener">geo.api.gouv.fr</a></li>
+          <li><strong>OpenStreetMap</strong> contributeurs (via Overpass API) pour les couches d'équipements, transports et voies cyclables affichées sur la carte. Licence ODbL. © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a></li>
+          <li><strong>Portail national de l'artificialisation des sols</strong> — Données millésimées 2009-2023. <a href="https://artificialisation.developpement-durable.gouv.fr" target="_blank" rel="noopener">Portail artif</a></li>
+          <li><strong>Corine Land Cover</strong> (Copernicus) — Occupation des sols, nomenclatures 11 et 11-13. <a href="https://land.copernicus.eu" target="_blank" rel="noopener">Copernicus Land</a></li>
+        </ul>
+
+        <h2 class="content-h2">Cartographie</h2>
+        <p>Fonds de carte : <strong>CartoDB Positron</strong> (light_nolabels + light_only_labels). © OpenStreetMap contributors © CARTO. Bibliothèque cartographique : <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a> 1.9.4 (BSD-2-Clause).</p>
+
+        <h2 class="content-h2">Code source</h2>
+        <p>Le code source du prototype est disponible publiquement sur GitHub : <a href="https://github.com/tonybego33/GT-BDDe" target="_blank" rel="noopener">github.com/tonybego33/GT-BDDe</a>. Backend FastAPI (Python), frontend HTML/JS vanilla, déploiement Render.</p>
+
+        <h2 class="content-h2">Typographie</h2>
+        <p>Polices utilisées en distribution Google Fonts (open-source) : <em>Fraunces</em> (SIL Open Font License), <em>Geist</em> (SIL OFL), <em>Geist Mono</em> (SIL OFL).</p>
+
+        <div class="content-meta">Toutes les données sont issues de sources publiques sous licence ouverte. Aucune donnée personnelle n'est traitée par cet outil.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════ TAB CONTENT : ÉQUIPE ═══════════════ -->
+<div class="tab-content" data-tab-content="equipe" hidden>
+  <section class="content-page">
+    <div class="wrap">
+      <div class="content-inner">
+        <div class="eyebrow"><span class="eyebrow-bar"></span>Équipe GT BDDe</div>
+        <h1 class="content-title">Le Groupe<br><em>de Travail</em>.</h1>
+        <p class="content-lede">
+          BDDe est porté par le Groupe de Travail Base de Données environnementales d'<strong>AREP</strong>, filiale architecturale et urbaine de SNCF Gares &amp; Connexions.
+        </p>
+
+        <h2 class="content-h2">Encadrement</h2>
+        <ul class="content-list">
+          <li><strong>Fabien Rosa</strong> — pilote du Groupe de Travail BDDe, AREP. Responsable méthodologique (base de donnée, typologies, pondérations, sens des indicateurs).</li>
+        </ul>
+
+        <h2 class="content-h2">Développement &amp; data</h2>
+        <ul class="content-list">
+          <li><strong>Tony Bego</strong> — assistant d'études en programmation, AREP. Conception du prototype, branchement des données INSEE / ADEME / IGN, développement frontend &amp; backend.</li>
+
+        </ul>
+
+        <h2 class="content-h2">À propos d'AREP</h2>
+        <p>AREP est une agence pluridisciplinaire d'architecture, d'ingénierie et de design urbain, filiale de SNCF Gares &amp; Connexions. Elle conçoit et accompagne la transformation des lieux du voyage et des territoires qui les entourent.</p>
+
+        <div class="content-meta">Pour toute question méthodologique : contacter Fabien Rosa via les canaux internes AREP.</div>
+      </div>
+    </div>
+  </section>
+</div>
+<style>
+/* ═══════════════ Pages placeholder ═══════════════ */
+/* ═══════════════ Pages contenu (méthodologie, indicateurs, ressources, équipe) ═══════════════ */
+.content-page { padding: 80px 0 120px; min-height: 60vh; }
+.content-inner { max-width: 760px; }
+.content-title { font-family: var(--font-serif); font-size: 56px; font-weight: 400; line-height: 1.05; letter-spacing: -0.035em; color: var(--ink); margin-top: 24px; }
+.content-title em { font-style: italic; font-weight: 500; color: var(--accent); }
+.content-lede { font-size: 17px; color: var(--ink-2); margin-top: 24px; line-height: 1.6; max-width: 680px; }
+.content-lede strong { color: var(--ink); font-weight: 600; }
+.content-h2 { font-family: var(--font-serif); font-size: 26px; font-weight: 500; letter-spacing: -0.015em; color: var(--ink); margin-top: 50px; padding-top: 24px; border-top: 1px solid var(--rule); }
+.content-page p { font-size: 15px; color: var(--ink-2); line-height: 1.7; margin-top: 14px; }
+.content-page p strong { color: var(--ink); font-weight: 600; }
+.content-page p em { font-style: italic; color: var(--accent); }
+.content-list { font-size: 15px; color: var(--ink-2); line-height: 1.75; margin-top: 14px; padding-left: 22px; }
+.content-list li { margin-bottom: 8px; }
+.content-list li strong { color: var(--ink); font-weight: 600; }
+.content-page a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.content-page a:hover { color: var(--accent-2); }
+.content-warning { margin-top: 32px; padding: 22px 26px; background: rgba(216,152,58,0.10); border-left: 4px solid #d8983a; border-radius: var(--radius-sm); }
+.content-warning strong { display: block; font-family: var(--font-serif); font-size: 16px; font-weight: 600; color: #a67126; margin-bottom: 8px; }
+.content-warning p { margin: 0; font-size: 14px; color: var(--ink-2); line-height: 1.6; }
+.content-warning p strong { display: inline; font-family: var(--font-ui); font-size: inherit; color: var(--ink); margin: 0; }
+.content-meta { margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--ink-3); font-family: var(--font-mono); letter-spacing: .04em; }
+
+/* Anciens placeholder (gardés pour compat) */
+.placeholder-page { padding: 80px 0 120px; min-height: 60vh; }
+.placeholder-inner { max-width: 720px; }
+.placeholder-title { font-family: var(--font-serif); font-size: 64px; font-weight: 400; line-height: 1.05; letter-spacing: -0.035em; color: var(--ink); margin-top: 24px; }
+.placeholder-title em { font-style: italic; font-weight: 500; color: var(--accent); }
+.placeholder-lede { font-size: 17px; color: var(--ink-2); margin-top: 24px; line-height: 1.6; max-width: 600px; }
+.placeholder-meta { margin-top: 32px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--ink-3); font-family: var(--font-mono); letter-spacing: .04em; text-transform: uppercase; }
+
+/* Tab content visibility */
+.tab-content { display: block; }
+.tab-content[hidden] { display: none !important; }
+
+/* Filter chips */
+.filter-chip { transition: all .15s; cursor: pointer; }
+.filter-customize { background: var(--accent-tint) !important; color: var(--accent) !important; border: 1px solid var(--accent-soft) !important; }
+.filter-customize:hover { background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
+
+/* Espacement entre groupes d'indicateurs */
+.ind-group { margin-bottom: 80px !important; }
+.ind-cards { gap: 20px !important; }
+
+/* Fix débordement : forcer les grids d'indicateurs à respecter leur conteneur */
+.indicators-groups { width: 100%; min-width: 0; }
+.ind-cards { width: 100%; min-width: 0; }
+.indicator { min-width: 0; }
+
+@media (max-width: 640px) {
+  .ind-cards { grid-template-columns: 1fr !important; }
+}
+
+/* Indicator picker drawer */
+.picker-overlay { position: fixed; inset: 0; background: rgba(24,26,31,.45); backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: opacity .28s; z-index: 1500; }
+.picker-overlay.on { opacity: 1; pointer-events: auto; }
+.picker-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 480px; max-width: 92vw; background: var(--bg-card); box-shadow: -8px 0 32px rgba(24,26,31,.15); transform: translateX(100%); transition: transform .32s cubic-bezier(.4,0,.2,1); z-index: 1600; display: flex; flex-direction: column; }
+.picker-drawer.on { transform: translateX(0); }
+.picker-head { padding: 26px 30px 18px; border-bottom: 1px solid var(--rule); position: relative; }
+.picker-head h3 { font-family: var(--font-serif); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; }
+.picker-head .sub { font-size: 12.5px; color: var(--ink-3); margin-top: 6px; }
+.picker-close { position: absolute; top: 18px; right: 18px; width: 34px; height: 34px; background: var(--bg-soft); border: 1px solid var(--rule); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--ink-2); font-size: 16px; cursor: pointer; }
+.picker-close:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.picker-actions { padding: 12px 30px; border-bottom: 1px solid var(--rule-2); display: flex; gap: 10px; align-items: center; font-size: 12px; }
+.picker-actions button { padding: 6px 12px; background: var(--bg-soft); border: 1px solid var(--rule); border-radius: var(--radius-sm); font-size: 11px; color: var(--ink-2); cursor: pointer; font-weight: 500; }
+.picker-actions button:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+.picker-count { margin-left: auto; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; }
+.picker-body { flex: 1; overflow-y: auto; padding: 12px 30px 20px; }
+.picker-group { margin-bottom: 20px; }
+.picker-group-title { font-family: var(--font-serif); font-size: 16px; font-weight: 500; padding: 10px 0; border-bottom: 1px solid var(--rule-2); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: baseline; }
+.picker-group-toggle { font-size: 11px; color: var(--accent); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; font-family: inherit; }
+.picker-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+.picker-item:hover { color: var(--ink); }
+.picker-item input { margin: 0; cursor: pointer; accent-color: var(--accent); }
+.picker-item-name { flex: 1; }
+.picker-item-src { font-size: 10px; color: var(--ink-4); font-family: var(--font-mono); }
+.picker-foot { padding: 16px 30px; border-top: 1px solid var(--rule); background: var(--bg-soft); display: flex; gap: 10px; }
+.picker-foot button { flex: 1; padding: 10px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; cursor: pointer; border: none; }
+.picker-foot .btn-secondary { background: var(--bg-card); border: 1px solid var(--rule); color: var(--ink-2); }
+.picker-foot .btn-secondary:hover { background: var(--rule); }
+.picker-foot .btn-primary-pick { background: var(--ink); color: #fff; }
+.picker-foot .btn-primary-pick:hover { background: var(--accent); }
+@media (max-width: 520px) { .picker-drawer { width: 100vw; } }
+
+/* Footer links lisibles */
+.site-footer a { transition: color .15s; }
+.site-footer a:hover { color: var(--accent); }
+</style>
+
+<!-- Picker Drawer (sélection d'indicateurs) -->
+<div class="picker-overlay" id="pickerOverlay"></div>
+<aside class="picker-drawer" id="pickerDrawer" aria-hidden="true">
+  <div class="picker-head">
+    <button class="picker-close" id="pickerClose">✕</button>
+    <h3>Choisir les indicateurs</h3>
+    <div class="sub">Cochez ceux que vous souhaitez afficher dans le détail.</div>
+  </div>
+  <div class="picker-actions">
+    <button id="pickerSelectAll">Tout cocher</button>
+    <button id="pickerClearAll">Tout décocher</button>
+    <span class="picker-count" id="pickerCount">0 sélectionnés</span>
+  </div>
+  <div class="picker-body" id="pickerBody"></div>
+  <div class="picker-foot">
+    <button class="btn-secondary" id="pickerCancel">Annuler</button>
+    <button class="btn-primary-pick" id="pickerApply">Appliquer</button>
+  </div>
+</aside>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      DRAWER GOUVERNANCE
@@ -1527,39 +1796,252 @@ button { font-family: inherit; font-size: inherit; cursor: pointer; border: none
         <span class="brand-mark"><span class="brand-mark-block"></span><span class="brand-mark-block"></span><span class="brand-mark-block"></span></span>
         <span class="brand-name">BDDe</span>
       </div>
-      <p class="footer-desc">Outil de diagnostic territorial multicritère développé par le Groupe de Travail Base de Données environnementales d'AREP.</p>
+      <p class="footer-desc">Outil de diagnostic territorial multicritère développé par le Groupe de Travail Base de Données environnementales d'AREP. Prototype expérimental.</p>
     </div>
     <div class="footer-col">
       <span class="footer-col-title">Sources</span>
-      <a href="#">INSEE Recensement & Filosofi</a>
-      <a href="#">ADEME Inventaire GES</a>
-      <a href="#">IGN Admin Express</a>
-      <a href="#">geo.api.gouv.fr</a>
+      <a href="https://www.insee.fr" target="_blank" rel="noopener">INSEE Recensement &amp; Filosofi</a>
+      <a href="https://www.ademe.fr" target="_blank" rel="noopener">ADEME Inventaire GES</a>
+      <a href="https://www.ign.fr" target="_blank" rel="noopener">IGN Admin Express</a>
+      <a href="https://geo.api.gouv.fr" target="_blank" rel="noopener">geo.api.gouv.fr</a>
     </div>
     <div class="footer-col">
       <span class="footer-col-title">À propos</span>
-      <a href="#">Méthodologie complète</a>
-      <a href="#">Équipe GT BDDe</a>
-      <a href="#">Contact</a>
+      <a href="#" data-go-tab="methodologie">Méthodologie complète</a>
+      <a href="#" data-go-tab="equipe">Équipe GT BDDe</a>
+      <a href="#" data-go-tab="ressources">Sources &amp; crédits</a>
     </div>
     <div class="footer-col footer-col-meta">
       <span class="footer-version">V0.4 · Avril 2026</span>
-      <span class="footer-arep">AREP · filiale SNCF Gares & Connexions</span>
+      <span class="footer-arep">AREP · filiale SNCF Gares &amp; Connexions</span>
+      <span class="footer-arep" style="margin-top:8px;font-size:10px">Données publiques sous licences ouvertes.<br>Aucune donnée personnelle traitée.</span>
     </div>
   </div>
 </footer>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MODAL D'AVERTISSEMENT (premier accès)
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <div class="welcome-viz">
+      <svg viewBox="-100 -100 200 200" class="welcome-svg" aria-hidden="true">
+        <!-- Cercles concentriques (gradients de score) -->
+        <circle cx="0" cy="0" r="80" fill="none" stroke="var(--rule)" stroke-width="0.6" stroke-dasharray="2 3" class="w-ring" style="--d:0s"/>
+        <circle cx="0" cy="0" r="60" fill="none" stroke="var(--rule)" stroke-width="0.6" stroke-dasharray="2 3" class="w-ring" style="--d:.1s"/>
+        <circle cx="0" cy="0" r="40" fill="none" stroke="var(--rule)" stroke-width="0.6" stroke-dasharray="2 3" class="w-ring" style="--d:.2s"/>
+        <circle cx="0" cy="0" r="20" fill="none" stroke="var(--rule)" stroke-width="0.6" stroke-dasharray="2 3" class="w-ring" style="--d:.3s"/>
+
+        <!-- 6 axes (les 6 dimensions) -->
+        <g class="w-axes">
+          <line x1="0" y1="0" x2="0" y2="-80" stroke="var(--rule-2)" stroke-width="0.6" class="w-axis" style="--d:.4s"/>
+          <line x1="0" y1="0" x2="69.3" y2="-40" stroke="var(--rule-2)" stroke-width="0.6" class="w-axis" style="--d:.45s"/>
+          <line x1="0" y1="0" x2="69.3" y2="40" stroke="var(--rule-2)" stroke-width="0.6" class="w-axis" style="--d:.5s"/>
+          <line x1="0" y1="0" x2="0" y2="80" stroke="var(--rule-2)" stroke-width="0.6" class="w-axis" style="--d:.55s"/>
+          <line x1="0" y1="0" x2="-69.3" y2="40" stroke="var(--rule-2)" stroke-width="0.6" class="w-axis" style="--d:.6s"/>
+          <line x1="0" y1="0" x2="-69.3" y2="-40" stroke="var(--rule-2)" stroke-width="0.6" class="w-axis" style="--d:.65s"/>
+        </g>
+
+        <!-- Polygone radar (animé en continu : varie les profils) -->
+        <polygon id="welcomePoly" class="w-polygon"
+          points="0,-58 52,-30 45,28 0,62 -48,25 -55,-30"
+          fill="rgba(193,74,46,0.15)"
+          stroke="var(--accent)"
+          stroke-width="1.6"
+          stroke-linejoin="round"/>
+
+        <!-- 6 points sur les sommets, animés en parallèle -->
+        <circle id="welcomeP0" cx="0"   cy="-58" r="3.5" fill="var(--accent)" stroke="var(--bg-card)" stroke-width="1.5" class="w-point" style="--d:1.0s"/>
+        <circle id="welcomeP1" cx="52"  cy="-30" r="3.5" fill="var(--accent)" stroke="var(--bg-card)" stroke-width="1.5" class="w-point" style="--d:1.1s"/>
+        <circle id="welcomeP2" cx="45"  cy="28"  r="3.5" fill="var(--accent)" stroke="var(--bg-card)" stroke-width="1.5" class="w-point" style="--d:1.2s"/>
+        <circle id="welcomeP3" cx="0"   cy="62"  r="3.5" fill="var(--accent)" stroke="var(--bg-card)" stroke-width="1.5" class="w-point" style="--d:1.3s"/>
+        <circle id="welcomeP4" cx="-48" cy="25"  r="3.5" fill="var(--accent)" stroke="var(--bg-card)" stroke-width="1.5" class="w-point" style="--d:1.4s"/>
+        <circle id="welcomeP5" cx="-55" cy="-30" r="3.5" fill="var(--accent)" stroke="var(--bg-card)" stroke-width="1.5" class="w-point" style="--d:1.5s"/>
+
+        <!-- Logo BDDe au centre (mini brand-mark) -->
+        <g class="w-logo">
+          <rect x="-9" y="-12" width="5" height="22" fill="var(--accent)" rx="0.5" class="w-block" style="--d:.05s"/>
+          <rect x="-2.5" y="-9" width="5" height="18" fill="var(--ink)" rx="0.5" class="w-block" style="--d:.15s"/>
+          <rect x="4" y="-6" width="5" height="14" fill="#e9c0b3" rx="0.5" class="w-block" style="--d:.25s"/>
+        </g>
+      </svg>
+    </div>
+    <h2 id="welcomeTitle" class="welcome-title">Bienvenue sur l'analyse<br>territoriale <em>BDDe</em></h2>
+    <p class="welcome-lede">Avant de commencer, quelques précisions importantes sur ce prototype.</p>
+
+    <div class="welcome-section">
+      <h3>⚠ Prototype en développement</h3>
+      <p>Cet outil est un <strong>prototype web expérimental en phase de développement actif</strong>. L'interface, les calculs et le scoring sont susceptibles de changer. <strong>Aucune conclusion opérationnelle ne doit être tirée des scores affichés à ce stade.</strong></p>
+    </div>
+
+    <div class="welcome-section">
+      <h3>📊 Scoring non calibré</h3>
+      <p>Les pondérations entre indicateurs et entre dimensions <strong>n'ont pas encore été validées</strong>. Le sens d'optimisation de plusieurs indicateurs reste à arbitrer avec le GT BDDe. Le scoring affiché est <strong>indicatif, provisoire, et non représentatif</strong>.</p>
+    </div>
+
+    <div class="welcome-section">
+      <h3>🏛 Cadre du projet</h3>
+      <p>Outil développé par <strong>Tony Bego</strong> (assistant d'études en programmation, AREP) dans le cadre du <strong>Groupe de Travail Base de Données environnementales</strong> piloté par <strong>Fabien Rosa</strong></p>
+    </div>
+
+    <div class="welcome-section">
+      <h3>📚 Sources mobilisées</h3>
+      <p>INSEE (Recensement, BPE, Filosofi), ADEME (Inventaire GES), IGN (Admin Express, OCS GE), geo.api.gouv.fr, OpenStreetMap (via Overpass), Portail national de l'artificialisation, Corine Land Cover. <strong>Toutes les données sont issues de sources publiques sous licence ouverte.</strong> Aucune donnée personnelle n'est traitée.</p>
+    </div>
+
+    <div class="welcome-foot">
+      <label class="welcome-checkbox">
+        <input type="checkbox" id="welcomeDontShow"> Ne plus afficher
+      </label>
+      <button class="welcome-btn" id="welcomeOk">J'ai compris, accéder à l'outil</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.welcome-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(24,26,31,.72); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 30px 20px;
+  animation: welcome-fade .35s ease;
+}
+.welcome-overlay.hidden { display: none; }
+@keyframes welcome-fade { from { opacity: 0; } to { opacity: 1; } }
+.welcome-modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  max-width: 640px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  padding: 40px 44px 32px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.35);
+  animation: welcome-rise .45s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes welcome-rise { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+.welcome-mark { margin-bottom: 16px; }
+.welcome-mark .brand-mark { display: inline-flex; gap: 3px; }
+.welcome-mark .brand-mark-block { width: 10px; height: 30px; }
+
+/* Visu animée multicritère */
+.welcome-viz {
+  display: flex; justify-content: center; align-items: center;
+  margin: -8px 0 12px;
+}
+.welcome-svg {
+  width: 130px; height: 130px;
+  filter: drop-shadow(0 4px 12px rgba(193,74,46,0.10));
+}
+
+/* Logo central : pulse léger */
+.welcome-svg .w-logo { transform-origin: 0 0; animation: w-pulse 3.6s ease-in-out infinite; }
+@keyframes w-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+
+/* Blocs du logo : entrent en cascade au démarrage */
+.welcome-svg .w-block {
+  opacity: 0;
+  animation: w-block-in .5s var(--d, 0s) cubic-bezier(.2,.7,.3,1) forwards;
+  transform-origin: center bottom;
+}
+@keyframes w-block-in {
+  from { opacity: 0; transform: scaleY(0.2) translateY(8px); }
+  to   { opacity: 1; transform: scaleY(1) translateY(0); }
+}
+
+/* Cercles concentriques : apparaissent en cascade */
+.welcome-svg .w-ring {
+  opacity: 0;
+  transform-origin: center;
+  animation: w-ring-in .6s var(--d, 0s) ease-out forwards;
+}
+@keyframes w-ring-in {
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Axes : trace progressive */
+.welcome-svg .w-axis {
+  opacity: 0;
+  animation: w-axis-in .35s var(--d, 0s) ease-out forwards;
+}
+@keyframes w-axis-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Polygone du radar : grossit depuis le centre, puis JS prend le relais pour le morph */
+.welcome-svg .w-polygon {
+  opacity: 0;
+  transform-origin: center;
+  animation: w-poly-in .9s 0.75s cubic-bezier(.34,1.56,.64,1) forwards;
+  transition: points 1.6s cubic-bezier(.4,0,.2,1);
+}
+@keyframes w-poly-in {
+  from { opacity: 0; transform: scale(0); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Points : apparaissent un par un */
+.welcome-svg .w-point {
+  opacity: 0;
+  transform-origin: center;
+  animation: w-point-in .4s var(--d, 0s) cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes w-point-in {
+  from { opacity: 0; transform: scale(0); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.welcome-title {
+  font-family: var(--font-serif); font-size: 32px; font-weight: 500;
+  letter-spacing: -0.02em; color: var(--ink);
+}
+.welcome-title em { color: var(--accent); font-style: italic; }
+.welcome-lede {
+  font-size: 15px; color: var(--ink-2); margin-top: 8px; line-height: 1.5;
+}
+.welcome-section {
+  margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--rule-2);
+}
+.welcome-section h3 {
+  font-family: var(--font-ui); font-size: 13px; font-weight: 600;
+  color: var(--ink); letter-spacing: .005em;
+}
+.welcome-section p {
+  font-size: 13.5px; color: var(--ink-2); line-height: 1.6; margin-top: 6px;
+}
+.welcome-section strong { color: var(--ink); font-weight: 600; }
+.welcome-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rule);
+  flex-wrap: wrap; gap: 12px;
+}
+.welcome-checkbox {
+  font-size: 12px; color: var(--ink-3);
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+}
+.welcome-checkbox input { accent-color: var(--accent); cursor: pointer; }
+.welcome-btn {
+  background: var(--ink); color: #fff; border: none;
+  padding: 12px 22px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background .15s;
+}
+.welcome-btn:hover { background: var(--accent); }
+@media (max-width: 540px) {
+  .welcome-modal { padding: 28px 22px 22px; }
+  .welcome-title { font-size: 24px; }
+}
+</style>
+
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
-   BDDe · JS de branchement API sur la refonte DA
-   - Injecte les données backend dans la structure du mockup
-   - Conserve les animations/comportements visuels
-   - Greffe autocomplete, multi-comparaison, drawer gouvernance
+   BDDe · JS V2 — refonte branchée API (fixes carte, nav, boutons, picker)
    ═══════════════════════════════════════════════════════════════════════ */
 
 const BACKEND = "https://arep-bdde.onrender.com";
 
-// ───────────────────── ÉTAT ─────────────────────
 let currentCode = "241700434";
 let compareCodes = [];
 let liveData = {};
@@ -1567,49 +2049,47 @@ let mapInstance = null;
 let mapPolygons = [];
 let mapLayersState = { bpe: null, tc: null, velo: null };
 
+// Filtre indicateurs : null = tous ; sinon array de codes
+let indicatorFilter = null;          // restriction par codes
+let indicatorDimFilter = "all";      // dimension active
+
 const COMPARE_COLORS = ["#2a4a6f", "#8a5a2f", "#5a7a47", "#8a2f5f", "#5f2f8a", "#b5882b", "#20a0a0"];
 const colorFor = i => COMPARE_COLORS[i % COMPARE_COLORS.length];
 
-// ───────────────────── META DIMENSIONS ─────────────────────
 const DIM_META = {
-  struct: {
-    label: "Structure urbaine", short: "Structure",
-    synth: "Densité brute · artif. habitat · morphologie",
-    icon: "M3 21V9l9-6 9 6v12h-6v-7h-6v7H3z",
-  },
-  access: {
-    label: "Accessibilité aux équipements", short: "Accessibilité",
-    synth: "Équipements BPE · services · santé",
-    icon: "M12 2a5 5 0 0 0-5 5c0 3.5 5 11 5 11s5-7.5 5-11a5 5 0 0 0-5-5zM12 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4z",
-  },
-  mob: {
-    label: "Mobilité", short: "Mobilité",
-    synth: "En attente · branchement outil Mobility",
-    icon: "M5 17h14l-2-8H7l-2 8zm2 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 9V5h10v4",
-  },
-  env: {
-    label: "Environnement", short: "Environnement",
-    synth: "GES · énergie · artificialisation",
-    icon: "M12 2C8 6 6 10 6 14a6 6 0 0 0 12 0c0-4-2-8-6-12zm0 16a2 2 0 1 1 0-4 2 2 0 0 1 0 4z",
-  },
-  socio: {
-    label: "Structure socio-économique", short: "Socio-éco",
-    synth: "Revenu · pauvreté · inégalités",
-    icon: "M3 20h18M5 20V10m4 10V6m4 14V13m4 7V9m4 11V3",
-  },
-  gouv: {
-    label: "Gouvernance", short: "Gouvernance",
-    synth: "Politiques mobilité · climat · vélo",
-    icon: "M12 2L3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7l-9-5zm-1 13l-3-3 1.4-1.4L11 12.2l4.6-4.6L17 9l-6 6z",
-  },
+  struct: { label: "Structure urbaine", short: "Structure", synth: "Densité brute · artif. habitat · morphologie", icon: "M3 21V9l9-6 9 6v12h-6v-7h-6v7H3z" },
+  access: { label: "Accessibilité aux équipements", short: "Accessibilité", synth: "Équipements BPE · services · santé", icon: "M12 2a5 5 0 0 0-5 5c0 3.5 5 11 5 11s5-7.5 5-11a5 5 0 0 0-5-5zM12 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" },
+  mob:    { label: "Mobilité", short: "Mobilité", synth: "En attente · branchement outil Mobility", icon: "M5 17h14l-2-8H7l-2 8zm2 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 9V5h10v4" },
+  env:    { label: "Environnement", short: "Environnement", synth: "GES · énergie · artificialisation", icon: "M12 2C8 6 6 10 6 14a6 6 0 0 0 12 0c0-4-2-8-6-12zm0 16a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" },
+  socio:  { label: "Structure socio-économique", short: "Socio-éco", synth: "Revenu · pauvreté · inégalités", icon: "M3 20h18M5 20V10m4 10V6m4 14V13m4 7V9m4 11V3" },
+  gouv:   { label: "Gouvernance", short: "Gouvernance", synth: "Politiques mobilité · climat · vélo", icon: "M12 2L3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7l-9-5zm-1 13l-3-3 1.4-1.4L11 12.2l4.6-4.6L17 9l-6 6z" },
 };
 const DIM_ORDER = ["struct", "access", "mob", "env", "socio", "gouv"];
 
 // ───────────────────── NAV TABS ─────────────────────
 document.querySelectorAll('.nav-link').forEach(link => {
   link.addEventListener('click', () => {
+    const tab = link.dataset.tab;
+    if (!tab) { console.warn("nav-link sans data-tab"); return; }
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('is-active'));
     link.classList.add('is-active');
+    let switched = 0;
+    document.querySelectorAll('.tab-content').forEach(tc => {
+      const match = tc.dataset.tabContent === tab;
+      if (match) {
+        tc.removeAttribute('hidden');
+        tc.style.display = 'block';
+        switched++;
+      } else {
+        tc.setAttribute('hidden', '');
+        tc.style.display = 'none';
+      }
+    });
+    console.log(`[nav] tab=${tab}, contents matched=${switched}`);
+    if (tab === "diagnostic" && mapInstance) {
+      setTimeout(() => mapInstance.invalidateSize(), 80);
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
   });
 });
 
@@ -1636,7 +2116,6 @@ function kindLabel(typeEpci) {
 }
 
 function phraseFromRang(rang, sensPositif) {
-  // rang = 0..100 : pourcentage de communes ayant valeur inférieure
   if (rang == null) return "";
   const score = sensPositif ? rang : 100 - rang;
   if (score >= 75) return sensPositif ? `Mieux que ${Math.round(rang)} % des agglos similaires` : `Mieux que ${Math.round(100 - rang)} % des agglos similaires`;
@@ -1646,7 +2125,11 @@ function phraseFromRang(rang, sensPositif) {
   return sensPositif ? `Moins bien que ${Math.round(100 - rang)} % des similaires` : `Plus élevé que ${Math.round(rang)} % des similaires`;
 }
 
-// ───────────────────── CHARGEMENT & RENDU PRINCIPAL ─────────────────────
+// Indicateurs dont une valeur basse est "meilleure"
+const NEG_KEYS = new Set(["artif_par_hab", "part_art_habitat", "ges_transport_par_hab", "ges_total_par_hab", "conso_energie_par_hab", "taux_pauvrete", "rapport_interdecile", "indic_03_art_popsup", "indic_04_ges_pop", "indic_05_energie_pop"]);
+const sensFor = code => !NEG_KEYS.has(code);
+
+// ───────────────────── MAIN LOAD/RENDER ─────────────────────
 async function loadAndRender() {
   const codes = [currentCode, ...compareCodes];
   for (const code of codes) {
@@ -1674,7 +2157,7 @@ function renderAll() {
   renderCompareUI();
 }
 
-// ───────────────────── IDENTITY (bandeau territoire) ─────────────────────
+// ───────────────────── IDENTITY ─────────────────────
 function renderIdentity(data) {
   const t = data.territoire;
   const typeEl = document.querySelector(".identity-type");
@@ -1687,20 +2170,20 @@ function renderIdentity(data) {
   if (typeEl) typeEl.textContent = kindLabel(t.type_epci);
   if (codeEl) codeEl.textContent = (t.type === "commune" ? "INSEE · " : "SIREN · ") + t.code;
 
-  // Typologie depuis indicateurs.score_global
   const sg = data.indicateurs.score_global;
   if (typoEl && sg) typoEl.textContent = sg.libelle_typo || "Typologie inconnue";
 
   if (titleEl && laEl) {
     const name = t.nom || "";
-    // Tenter de séparer "CA de " / "CC de " du nom
-    const match = name.match(/^(CA|CU|CC|Communauté [^\s]+|Métropole) (de |d'|du |de la |des )?/);
+    const match = name.match(/^(CA|CU|CC|Communauté \w+|Métropole|Grand) (de |d'|du |de la |des )?/);
     if (match) {
       laEl.textContent = match[0];
-      titleEl.childNodes[1].nodeValue = name.substring(match[0].length);
+      // Recompose le titre proprement (laEl est juste le préfixe)
+      // Vide le contenu et rajoute le span + texte restant
+      titleEl.innerHTML = `<span class="identity-la">${match[0]}</span>${name.substring(match[0].length)}`;
     } else {
       laEl.textContent = "";
-      titleEl.childNodes[1].nodeValue = name;
+      titleEl.innerHTML = `<span class="identity-la"></span>${name}`;
     }
   }
   if (metaEl) {
@@ -1735,125 +2218,187 @@ function renderKPIs(data) {
   const popEl = document.querySelector(".kpi-pop .kpi-val");
   if (popEl) popEl.textContent = fmtNum(pop);
 
-  // GES par habitant (depuis dim env)
-  renderKPIBar(".kpi-card:nth-child(3)", dims.env, "ges_total_par_hab", "tCO₂eq/hab/an", false);
-  // Artificialisation par hab (depuis dim struct)
-  renderKPIBar(".kpi-card:nth-child(4)", dims.struct, "artif_par_hab", "m²/hab", false);
+  // Calcul évolution pop si on a les 2 années
+  const pop2021 = dims.struct?.indicateurs?.find(i => i.code === "population_2021")?.valeur || pop;
+  const pop2015 = dims.struct?.indicateurs?.find(i => i.code === "population_2015")?.valeur;
+  const badge = document.querySelector(".kpi-pop .kpi-badge");
+  if (badge && pop2015 && pop2021) {
+    const delta = ((pop2021 - pop2015) / pop2015 * 100);
+    badge.textContent = `${delta > 0 ? "+" : ""}${delta.toFixed(1)} % / 6 ans`;
+    badge.className = "kpi-badge " + (delta > 0 ? "kpi-badge-up" : "kpi-badge-down");
+  }
+  // Mettre à jour la courbe de pop
+  updatePopChart(pop2015, pop2021);
+
+  // GES + Artif
+  const allCards = document.querySelectorAll(".kpi-column > .kpi-card");
+  if (allCards[2]) renderKPIBarEl(allCards[2], dims.env, "ges_total_par_hab", "tCO₂eq/hab/an", false);
+  if (allCards[3]) renderKPIBarEl(allCards[3], dims.struct, "artif_par_hab", "m²/hab", false);
 }
 
-function renderKPIBar(selector, dim, indCode, unit, sensPositif) {
-  const card = document.querySelector(selector);
+function updatePopChart(pop2015, pop2021) {
+  const svg = document.querySelector(".pop-svg");
+  if (!svg || !pop2015 || !pop2021) return;
+  // Normaliser entre 18 (haut) et 58 (bas) selon la valeur relative
+  const minV = Math.min(pop2015, pop2021), maxV = Math.max(pop2015, pop2021);
+  const range = maxV - minV || 1;
+  const yFor = v => 58 - ((v - minV) / range) * 40;
+  // Deux points : début et fin
+  const y1 = pop2021 > pop2015 ? 58 : 18;
+  const y2 = pop2021 > pop2015 ? 18 : 58;
+  // Réécrire les paths
+  const area = svg.querySelector("path[fill^='url']");
+  const line = svg.querySelector("path[stroke='#c14a2e']");
+  if (area) area.setAttribute("d", `M0,${y1} L340,${y2} L340,80 L0,80 Z`);
+  if (line) line.setAttribute("d", `M0,${y1} L340,${y2}`);
+  const c1 = svg.querySelectorAll("circle")[0];
+  const c2 = svg.querySelectorAll("circle")[1];
+  if (c1) c1.setAttribute("cy", y1);
+  if (c2) c2.setAttribute("cy", y2);
+  // Mettre à jour l'axe X avec les vraies années
+  const xaxis = document.querySelector(".pop-xaxis");
+  if (xaxis) xaxis.innerHTML = `<span>2015</span><span></span><span></span><span>2021</span>`;
+}
+
+function renderKPIBarEl(card, dim, indCode, unit, sensPositif) {
   if (!card || !dim || !dim.indicateurs) return;
   const ind = dim.indicateurs.find(i => i.code === indCode);
   if (!ind) return;
-
   const valEl = card.querySelector(".kpi-val");
   const unitEl = card.querySelector(".kpi-unit");
   if (valEl) valEl.textContent = ind.valeur_formatee || fmtNum(ind.valeur, 2);
   if (unitEl) unitEl.textContent = unit;
-
-  // Mini range (zones colorées + marqueur)
   const marker = card.querySelector(".mini-range-marker");
   const peer = card.querySelector(".mini-range-peer");
   const caption = card.querySelector(".mini-range-caption");
-  if (marker && typeof ind.rang_typo === "number") {
-    marker.style.left = ind.rang_typo + "%";
-  }
-  if (peer) {
-    peer.style.left = "50%";
-  }
-  if (caption) {
-    caption.textContent = phraseFromRang(ind.rang_typo, sensPositif);
-  }
+  if (marker && typeof ind.rang_typo === "number") marker.style.left = ind.rang_typo + "%";
+  if (peer) peer.style.left = "50%";
+  if (caption) caption.innerHTML = phraseFromRang(ind.rang_typo, sensPositif) || ind.source || "";
 }
 
-// ───────────────────── MAP (Leaflet) ─────────────────────
+// ───────────────────── MAP ─────────────────────
 async function fetchContour(code) {
   const isCommune = /^\d[\dAB]\d{3}$/i.test(code);
   const path = isCommune ? "communes" : "epcis";
   try {
     const r = await fetch(`https://geo.api.gouv.fr/${path}?code=${code}&fields=contour&format=geojson&geometry=contour`);
-    if (r.ok) return await r.json();
-  } catch (e) {}
-  return null;
+    if (!r.ok) return null;
+    const data = await r.json();
+    if (data && (data.type === "FeatureCollection" || data.type === "Feature")) return data;
+    if (Array.isArray(data) && data.length > 0) return data[0];
+    return null;
+  } catch (e) { console.warn("fetchContour error", code, e); return null; }
 }
 
 async function renderMap(data) {
   const el = document.getElementById('map');
   if (!el || typeof L === 'undefined') return;
 
-  // Si map déjà initialisée, on la détruit
-  if (mapInstance) { mapInstance.remove(); mapInstance = null; }
+  // Si pas encore de map, la créer
+  if (!mapInstance) {
+    mapInstance = L.map(el, {
+      zoomControl: true,
+      attributionControl: false,
+      scrollWheelZoom: true,
+      dragging: true,
+      doubleClickZoom: true,
+      touchZoom: true,
+    });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', { maxZoom: 18, subdomains: 'abcd' }).addTo(mapInstance);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { maxZoom: 18, subdomains: 'abcd', pane: 'shadowPane' }).addTo(mapInstance);
+    // Vue par défaut
+    mapInstance.setView([46.5, 2.5], 5);
+  }
+
+  // Force le recalcul de la taille (au cas où le conteneur a changé)
+  setTimeout(() => mapInstance.invalidateSize(), 50);
+
+  // Nettoyer les couches précédentes
+  mapPolygons.forEach(l => { try { mapInstance.removeLayer(l); } catch (e) {} });
   mapPolygons = [];
-
-  const map = L.map(el, {
-    zoomControl: true,
-    attributionControl: false,
-    scrollWheelZoom: false,
+  Object.keys(mapLayersState).forEach(k => {
+    if (mapLayersState[k]) { try { mapInstance.removeLayer(mapLayersState[k]); } catch (e) {} mapLayersState[k] = null; }
   });
-  mapInstance = map;
+  document.querySelectorAll('.layer-chip').forEach(c => {
+    if (c.dataset.layer !== "contour") c.classList.remove('is-active');
+  });
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', { maxZoom: 18, subdomains: 'abcd' }).addTo(map);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { maxZoom: 18, subdomains: 'abcd', pane: 'shadowPane' }).addTo(map);
+  // Fetch contours
+  const contourPromises = [fetchContour(currentCode), ...compareCodes.map(c => fetchContour(c))];
+  const [primary, ...cmps] = await Promise.all(contourPromises);
 
-  // Contour principal (terracotta)
-  const primary = await fetchContour(currentCode);
   const allLayers = [];
+
   if (primary) {
     const pLayer = L.geoJSON(primary, {
       style: { color: '#c14a2e', weight: 2.5, fillColor: '#c14a2e', fillOpacity: 0.09, smoothFactor: 0.8 }
-    }).addTo(map);
+    }).addTo(mapInstance);
     allLayers.push(pLayer);
     mapPolygons.push(pLayer);
     try {
       const b = pLayer.getBounds(), c = b.getCenter();
-      L.circleMarker([c.lat, c.lng], { radius: 5, color: '#c14a2e', weight: 2.5, fillColor: '#fdfbf6', fillOpacity: 1 })
-        .addTo(map)
+      const marker = L.circleMarker([c.lat, c.lng], { radius: 5, color: '#c14a2e', weight: 2.5, fillColor: '#fdfbf6', fillOpacity: 1 })
+        .addTo(mapInstance)
         .bindTooltip(data.territoire.nom, { permanent: true, direction: 'right', offset: [8, 0], className: 'map-tooltip' });
+      mapPolygons.push(marker);
     } catch (e) {}
+  } else {
+    console.warn("Pas de contour pour", currentCode);
   }
 
-  // Contours des comparés
-  for (let i = 0; i < compareCodes.length; i++) {
-    const code = compareCodes[i];
-    const geo = await fetchContour(code);
-    if (!geo) continue;
+  cmps.forEach((geo, i) => {
+    if (!geo) return;
     const color = colorFor(i);
     const layer = L.geoJSON(geo, {
       style: { color, weight: 2, fillColor: color, fillOpacity: 0.07, dashArray: '4 3' }
-    }).addTo(map);
+    }).addTo(mapInstance);
     allLayers.push(layer);
     mapPolygons.push(layer);
-  }
+    // Tooltip pour le comparé
+    try {
+      const b = layer.getBounds(), c = b.getCenter();
+      const cmpName = liveData[compareCodes[i]]?.territoire?.nom || compareCodes[i];
+      const marker = L.circleMarker([c.lat, c.lng], { radius: 4, color, weight: 2, fillColor: '#fdfbf6', fillOpacity: 1 })
+        .addTo(mapInstance)
+        .bindTooltip(cmpName, { permanent: false, direction: 'right', offset: [8, 0], className: 'map-tooltip' });
+      mapPolygons.push(marker);
+    } catch (e) {}
+  });
 
   if (allLayers.length > 0) {
-    try { map.fitBounds(L.featureGroup(allLayers).getBounds(), { padding: [20, 20] }); }
-    catch (e) { map.setView([46.5, 2.5], 5); }
-  } else {
-    map.setView([46.5, 2.5], 5);
+    try {
+      const fg = L.featureGroup(allLayers);
+      const bounds = fg.getBounds();
+      if (bounds.isValid()) {
+        mapInstance.fitBounds(bounds, { padding: [25, 25], animate: true, maxZoom: 12 });
+      }
+    } catch (e) { console.warn("fitBounds error", e); }
   }
 
-  setTimeout(() => map.invalidateSize(), 200);
+  // Force un 2e invalidate après le fit (parfois nécessaire)
+  setTimeout(() => mapInstance.invalidateSize(), 250);
 
-  // Mettre à jour le compteur "X communes" dans le map-sub
-  const sub = document.querySelector(".map-sub");
+  const sub = document.querySelector(".map-sub, .map-head-sub");
   if (sub) sub.textContent = `Contour officiel IGN · ${data.territoire.nb_communes || 0} communes`;
 
   bindLayerChips();
 }
 
-// ───────────────────── COUCHES CARTO (chips) ─────────────────────
 function bindLayerChips() {
   document.querySelectorAll('.layer-chip').forEach(chip => {
-    // Enlever anciens listeners en clonant
-    const newChip = chip.cloneNode(true);
-    chip.parentNode.replaceChild(newChip, chip);
-    newChip.addEventListener('click', async () => {
-      const layerKey = newChip.dataset.layer;
-      if (!layerKey || layerKey === "contour") return;
-      newChip.classList.toggle('is-active');
-      if (newChip.classList.contains('is-active')) {
+    if (chip._bound) return;
+    chip._bound = true;
+    chip.addEventListener('click', async () => {
+      const layerKey = chip.dataset.layer;
+      if (!layerKey || layerKey === "contour") {
+        chip.classList.toggle('is-active');
+        return;
+      }
+      chip.classList.toggle('is-active');
+      if (chip.classList.contains('is-active')) {
+        chip.style.opacity = "0.6";
         await loadCartoLayer(layerKey);
+        chip.style.opacity = "1";
       } else {
         unloadCartoLayer(layerKey);
       }
@@ -1894,7 +2439,7 @@ function unloadCartoLayer(key) {
   }
 }
 
-// ───────────────────── NARRATIVE (synthèse texte) ─────────────────────
+// ───────────────────── NARRATIVE ─────────────────────
 function renderNarrative(data) {
   const narrEl = document.querySelector(".narrative-text");
   if (!narrEl) return;
@@ -1902,20 +2447,14 @@ function renderNarrative(data) {
   const sg = data.indicateurs.score_global;
   const dims = data.indicateurs.dimensions || {};
   const typo = sg?.libelle_typo || "sa typologie";
-
-  // Générer une phrase contextuelle simple
   let phrase = `${t.nom}, ${kindLabel(t.type_epci).toLowerCase()} classée <strong>${typo}</strong>, `;
-  const scoreStruct = dims.struct?.score;
-  const scoreEnv = dims.env?.score;
-
-  if (scoreStruct >= 65) phrase += `présente une <em>structure urbaine favorable</em>`;
-  else if (scoreStruct < 45) phrase += `montre une <em>organisation territoriale diffuse</em>`;
+  const sStruct = dims.struct?.score, sEnv = dims.env?.score;
+  if (sStruct >= 65) phrase += `présente une <em>structure urbaine favorable</em>`;
+  else if (sStruct < 45) phrase += `montre une <em>organisation territoriale diffuse</em>`;
   else phrase += `affiche une <em>morphologie intermédiaire</em>`;
-
-  if (scoreEnv >= 65) phrase += ` avec de bonnes performances environnementales.`;
-  else if (scoreEnv < 45) phrase += `, mais des <em>tensions environnementales marquées</em>.`;
+  if (sEnv >= 65) phrase += ` avec de bonnes performances environnementales.`;
+  else if (sEnv < 45) phrase += `, mais des <em>tensions environnementales marquées</em>.`;
   else phrase += `.`;
-
   if (!dims.mob?.score) phrase += ` La dimension mobilité reste <em>à objectiver</em>.`;
   narrEl.innerHTML = phrase;
 }
@@ -1940,7 +2479,6 @@ function renderRadar(data) {
 
   const R = 152, n = radarDims.length;
 
-  // Vider les groupes
   const axesG = svg.querySelector('.radar-axes');
   const labelsG = document.getElementById('radar-labels');
   const pointsG = document.getElementById('radar-points');
@@ -1948,7 +2486,9 @@ function renderRadar(data) {
   if (labelsG) labelsG.innerHTML = "";
   if (pointsG) pointsG.innerHTML = "";
 
-  // Axes
+  // Supprimer les éventuels polygones de comparaison précédents
+  svg.querySelectorAll(".radar-poly-cmp").forEach(p => p.remove());
+
   radarDims.forEach((_, i) => {
     const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
     const line = document.createElementNS(SVG_NS, 'line');
@@ -1957,7 +2497,6 @@ function renderRadar(data) {
     axesG.appendChild(line);
   });
 
-  // Polygons
   const polyPoints = values => values.map((v, i) => {
     const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
     const r = ((v || 0) / 100) * R;
@@ -1967,7 +2506,7 @@ function renderRadar(data) {
   document.getElementById('radar-median').setAttribute('points', polyPoints(radarDims.map(d => d.median)));
   document.getElementById('radar-main').setAttribute('points', polyPoints(radarDims.map(d => d.main)));
 
-  // Points
+  // Points principaux
   radarDims.forEach((d, i) => {
     if (d.main == null) return;
     const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
@@ -1984,29 +2523,61 @@ function renderRadar(data) {
     pointsG.appendChild(c);
   });
 
+  // Polygones de comparaison
+  compareCodes.forEach((code, ci) => {
+    const cmpData = liveData[code];
+    if (!cmpData) return;
+    const cmpDims = cmpData.indicateurs?.dimensions || {};
+    const cmpVals = DIM_ORDER.map(k => {
+      const d = cmpDims[k];
+      return d && typeof d.score === "number" ? Math.round(d.score) : null;
+    });
+    const color = colorFor(ci);
+    // Polygone
+    const poly = document.createElementNS(SVG_NS, 'polygon');
+    poly.setAttribute('points', polyPoints(cmpVals));
+    poly.setAttribute('fill', color);
+    poly.setAttribute('fill-opacity', '0.08');
+    poly.setAttribute('stroke', color);
+    poly.setAttribute('stroke-width', '1.6');
+    poly.setAttribute('stroke-dasharray', '4 3');
+    poly.setAttribute('class', 'radar-poly-cmp');
+    // Insérer entre la médiane et le polygone main
+    const main = document.getElementById('radar-main');
+    main.parentNode.insertBefore(poly, main);
+    // Points
+    cmpVals.forEach((v, i) => {
+      if (v == null) return;
+      const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+      const r = (v / 100) * R;
+      const c = document.createElementNS(SVG_NS, 'circle');
+      c.setAttribute('cx', Math.cos(angle) * r);
+      c.setAttribute('cy', Math.sin(angle) * r);
+      c.setAttribute('r', 3);
+      c.setAttribute('fill', color);
+      c.setAttribute('class', 'radar-poly-cmp');
+      pointsG.appendChild(c);
+    });
+  });
+
   // Cartouches
   radarDims.forEach((d, i) => {
     const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
     const lblR = R + 48;
     const cx = Math.cos(angle) * lblR;
     const cy = Math.sin(angle) * lblR;
-
     const g = document.createElementNS(SVG_NS, 'g');
     g.setAttribute('class', 'radar-cartouche');
     g.setAttribute('transform', `translate(${cx.toFixed(1)}, ${cy.toFixed(1)})`);
     g.style.setProperty('--i', i);
-
     const anchor = Math.abs(cx) < 8 ? 'middle' : (cx > 0 ? 'start' : 'end');
     const xOffset = anchor === 'middle' ? 0 : (cx > 0 ? 16 : -16);
-    const iconCx = 0;
-
     const iconBg = document.createElementNS(SVG_NS, 'circle');
-    iconBg.setAttribute('cx', iconCx); iconBg.setAttribute('cy', -8); iconBg.setAttribute('r', 14);
+    iconBg.setAttribute('cx', 0); iconBg.setAttribute('cy', -8); iconBg.setAttribute('r', 14);
     iconBg.setAttribute('fill', d.status === 'pending' ? '#f4f1ea' : '#fdfbf6');
     iconBg.setAttribute('stroke', d.status === 'pending' ? '#d7cfbd' : '#c14a2e');
     iconBg.setAttribute('stroke-width', 1.4);
     g.appendChild(iconBg);
-
     const icon = document.createElementNS(SVG_NS, 'path');
     icon.setAttribute('d', d.icon);
     icon.setAttribute('fill', 'none');
@@ -2014,16 +2585,14 @@ function renderRadar(data) {
     icon.setAttribute('stroke-width', 1.4);
     icon.setAttribute('stroke-linejoin', 'round');
     icon.setAttribute('stroke-linecap', 'round');
-    icon.setAttribute('transform', `translate(${iconCx - 10}, ${-20}) scale(0.83)`);
+    icon.setAttribute('transform', `translate(-10, -20) scale(0.83)`);
     g.appendChild(icon);
-
     const name = document.createElementNS(SVG_NS, 'text');
     name.setAttribute('x', xOffset); name.setAttribute('y', 14); name.setAttribute('text-anchor', anchor);
     name.setAttribute('font-family', 'Geist, sans-serif'); name.setAttribute('font-size', 12.5);
     name.setAttribute('font-weight', 600); name.setAttribute('fill', '#181a1f');
     name.textContent = d.label;
     g.appendChild(name);
-
     const score = document.createElementNS(SVG_NS, 'text');
     score.setAttribute('x', xOffset); score.setAttribute('y', 30); score.setAttribute('text-anchor', anchor);
     score.setAttribute('font-family', 'Fraunces, serif'); score.setAttribute('font-size', 18);
@@ -2031,12 +2600,26 @@ function renderRadar(data) {
     score.setAttribute('fill', d.status === 'pending' ? '#9a9d9f' : '#c14a2e');
     score.textContent = d.status === 'pending' ? '—' : d.main;
     g.appendChild(score);
-
     labelsG.appendChild(g);
   });
+
+  // Mettre à jour la légende du radar avec le territoire principal et les comparés
+  const legend = document.querySelector(".radar-legend");
+  if (legend) {
+    const primaryName = data.territoire.nom;
+    const legendItems = [
+      `<span class="legend-item"><span class="legend-swatch" style="background:#c14a2e"></span>${primaryName}</span>`,
+      ...compareCodes.map((code, i) => {
+        const name = liveData[code]?.territoire?.nom || code;
+        return `<span class="legend-item"><span class="legend-swatch" style="background:${colorFor(i)}"></span>${name}</span>`;
+      }),
+      `<span class="legend-item legend-median"><span class="legend-swatch" style="background:#a8a190"></span>Médiane pairs</span>`,
+    ];
+    legend.innerHTML = legendItems.join("");
+  }
 }
 
-// ───────────────────── DIM ROWS (colonne droite synthèse) ─────────────────────
+// ───────────────────── DIM ROWS ─────────────────────
 function renderDimRows(data) {
   const container = document.querySelector(".dim-rows");
   if (!container) return;
@@ -2045,8 +2628,14 @@ function renderDimRows(data) {
     const d = dims[k];
     const m = DIM_META[k];
     const score = d && typeof d.score === "number" ? Math.round(d.score) : null;
-    const delta = null; // on n'a pas de comparaison directe pour l'instant
     const pending = score == null;
+
+    // Comparés
+    const cmpScores = compareCodes.map(code => {
+      const cd = liveData[code]?.indicateurs?.dimensions?.[k];
+      return cd && typeof cd.score === "number" ? Math.round(cd.score) : null;
+    });
+
     return `
       <div class="dim-row ${pending ? 'is-pending' : ''}">
         <div class="dim-row-head">
@@ -2056,10 +2645,12 @@ function renderDimRows(data) {
         </div>
         <div class="dim-row-bar">
           ${pending ? '' : `<div class="dim-row-fill" style="width:${score}%"></div><div class="dim-row-tick" style="left:50%"></div>`}
+          ${cmpScores.map((cs, ci) => cs != null ? `<div class="dim-row-cmp-tick" style="left:${cs}%;background:${colorFor(ci)}" title="${liveData[compareCodes[ci]]?.territoire?.nom || ''}"></div>` : '').join('')}
         </div>
         <div class="dim-row-meta">
           <span class="dim-row-hint">${m.synth}</span>
           ${pending ? `<span class="dim-row-badge is-pending">À brancher</span>` : ''}
+          ${cmpScores.filter(c => c != null).length > 0 ? `<span class="dim-row-cmp-vals">${cmpScores.map((cs, ci) => cs != null ? `<span style="color:${colorFor(ci)};font-family:var(--font-mono);font-weight:600;font-size:10px;margin-left:6px">${cs}</span>` : '').join('')}</span>` : ''}
         </div>
       </div>
     `;
@@ -2073,11 +2664,21 @@ function renderIndicators(data) {
   const dims = data.indicateurs.dimensions || {};
 
   const html = DIM_ORDER.map((k, idx) => {
+    // Filtrage par dimension
+    if (indicatorDimFilter !== "all" && indicatorDimFilter !== k) return "";
+
     const d = dims[k];
     const m = DIM_META[k];
     if (!d || !d.indicateurs || d.indicateurs.length === 0) return "";
 
-    const indCards = d.indicateurs.map(ind => renderIndicatorCard(ind, k)).join("");
+    // Filtrage par codes (si picker actif)
+    let inds = d.indicateurs;
+    if (indicatorFilter && indicatorFilter.length > 0) {
+      inds = inds.filter(i => indicatorFilter.includes(i.code));
+    }
+    if (inds.length === 0) return "";
+
+    const indCards = inds.map(ind => renderIndicatorCard(ind, k)).join("");
     const score = d && typeof d.score === "number" ? Math.round(d.score) : null;
 
     return `
@@ -2089,34 +2690,24 @@ function renderIndicators(data) {
             <p class="ind-group-sub">${m.synth}</p>
           </div>
           ${score != null ? `<div class="ind-group-score"><span class="ind-group-score-val">${score}</span><span class="ind-group-score-unit">/ 100</span></div>` : ''}
-          ${k === 'gouv' ? `<button class="btn btn-primary btn-gouv-inline" onclick="openGouvDrawer()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9M4 20l6-6 4 4L22 6"/></svg> Saisir</button>` : ''}
         </div>
         <div class="ind-cards">${indCards}</div>
       </div>
     `;
   }).join("");
-  container.innerHTML = html || '<p style="color:var(--ink-3);padding:40px;text-align:center">Aucun indicateur disponible.</p>';
+  container.innerHTML = html || '<p style="color:var(--ink-3);padding:60px;text-align:center">Aucun indicateur à afficher avec ces filtres.</p>';
 }
 
 function renderIndicatorCard(ind, dimKey) {
-  // sens par défaut +1 (haut = mieux) sauf mapping connu négatif
-  const negKeys = new Set(["artif_par_hab", "part_art_habitat", "ges_transport_par_hab", "ges_total_par_hab", "conso_energie_par_hab", "taux_pauvrete", "rapport_interdecile"]);
-  const sensPositif = !negKeys.has(ind.code);
-
+  const sensPositif = sensFor(ind.code);
   const val = ind.valeur_formatee != null ? ind.valeur_formatee : (ind.valeur != null ? String(ind.valeur) : "—");
   const unit = ind.unite || "";
   const statut = ind.statut === "ok" || ind.statut === "rempli" ? "live" : "todo";
-
-  // Rang typo
   const hasRangTypo = typeof ind.rang_typo === "number";
   const hasRangNat = typeof ind.rang_national === "number";
-
   const phrase = hasRangTypo ? phraseFromRang(ind.rang_typo, sensPositif) : "";
-
-  // Position du marqueur : on utilise le rang brut (0-100)
   const markerPosTypo = hasRangTypo ? ind.rang_typo : 50;
   const markerPosNat = hasRangNat ? ind.rang_national : null;
-
   const libTypo = ind.libelle_typo || "Agglos similaires";
   const nTypo = ind.n_typo || "";
   const nNat = ind.n_national || "";
@@ -2169,7 +2760,7 @@ function renderIndicatorCard(ind, dimKey) {
   `;
 }
 
-// ───────────────────── COMPARE UI (pills + autocomplete) ─────────────────────
+// ───────────────────── COMPARE UI ─────────────────────
 function renderCompareUI() {
   const container = document.querySelector(".compare-container");
   if (!container) return;
@@ -2208,10 +2799,7 @@ function removeCompare(code) {
   compareCodes = compareCodes.filter(c => c !== code);
   loadAndRender();
 }
-function clearCompare() {
-  compareCodes = [];
-  loadAndRender();
-}
+function clearCompare() { compareCodes = []; loadAndRender(); }
 window.removeCompare = removeCompare;
 window.clearCompare = clearCompare;
 
@@ -2269,17 +2857,10 @@ function bindCompareAutocomplete() {
 (function bindMainSearch() {
   const input = document.getElementById("search-input");
   if (!input) return;
-
-  // Créer dropdown
   const list = document.createElement("div");
-  list.className = "suggest-list search-suggest-list";
   list.style.cssText = "position:absolute;top:calc(100% + 4px);left:0;right:0;margin:0;background:var(--bg-card);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow-lg);max-height:320px;overflow-y:auto;z-index:300;display:none";
   const field = input.closest(".search-field");
-  if (field) {
-    field.style.position = "relative";
-    field.appendChild(list);
-  }
-
+  if (field) { field.style.position = "relative"; field.appendChild(list); }
   let timer = null;
   const hide = () => list.style.display = "none";
 
@@ -2310,6 +2891,7 @@ function bindCompareAutocomplete() {
             ev.preventDefault();
             currentCode = el.dataset.code;
             compareCodes = [];
+            indicatorFilter = null;
             input.value = "";
             hide();
             loadAndRender();
@@ -2324,11 +2906,8 @@ function bindCompareAutocomplete() {
     if (ev.key === "Enter") {
       const q = input.value.trim();
       if (/^\d{5}$/.test(q) || /^\d{9}$/.test(q)) {
-        currentCode = q;
-        compareCodes = [];
-        input.value = "";
-        hide();
-        loadAndRender();
+        currentCode = q; compareCodes = []; indicatorFilter = null;
+        input.value = ""; hide(); loadAndRender();
       }
     }
   });
@@ -2338,25 +2917,259 @@ function bindCompareAutocomplete() {
   });
 })();
 
-// Exemples hints
+// ───────────────────── MODAL D'ACCUEIL ─────────────────────
+(function welcomeModal() {
+  const overlay = document.getElementById("welcomeOverlay");
+  const okBtn = document.getElementById("welcomeOk");
+  const dontShow = document.getElementById("welcomeDontShow");
+  if (!overlay || !okBtn) return;
+
+  // === Animation continue du polygone multicritère ===
+  // 6 angles (sommets du hexagone régulier) à -90°, -30°, 30°, 90°, 150°, 210°
+  const ANGLES = [-90, -30, 30, 90, 150, 210].map(d => d * Math.PI / 180);
+  const RADIUS_MAX = 75;
+  const RADIUS_MIN = 22;
+
+  // Quelques "profils" plausibles à enchaîner
+  const PROFILS = [
+    [62, 75, 50, 70, 45, 35],   // équilibré favorable
+    [40, 30, 25, 75, 55, 30],   // littorale compacte
+    [70, 65, 35, 50, 60, 40],   // urbain dense
+    [25, 40, 30, 35, 70, 60],   // rural
+    [55, 70, 45, 55, 50, 50],   // moyen
+    [75, 60, 70, 40, 45, 55],   // pôle moyen actif
+    [35, 50, 25, 65, 70, 45],   // périurbain
+    [60, 55, 65, 45, 35, 70],   // métropole
+  ];
+
+  // Easing cubic in-out
+  const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  function pointsFromValues(values) {
+    return values.map((v, i) => {
+      const r = RADIUS_MIN + (v / 100) * (RADIUS_MAX - RADIUS_MIN);
+      const x = (Math.cos(ANGLES[i]) * r).toFixed(2);
+      const y = (Math.sin(ANGLES[i]) * r).toFixed(2);
+      return `${x},${y}`;
+    }).join(" ");
+  }
+
+  function setShape(values) {
+    const poly = document.getElementById("welcomePoly");
+    if (poly) poly.setAttribute("points", pointsFromValues(values));
+    values.forEach((v, i) => {
+      const dot = document.getElementById("welcomeP" + i);
+      if (!dot) return;
+      const r = RADIUS_MIN + (v / 100) * (RADIUS_MAX - RADIUS_MIN);
+      dot.setAttribute("cx", (Math.cos(ANGLES[i]) * r).toFixed(2));
+      dot.setAttribute("cy", (Math.sin(ANGLES[i]) * r).toFixed(2));
+    });
+  }
+
+  // Anim avec interpolation continue (1.4s par transition)
+  let currentValues = PROFILS[0].slice();
+  let animFrame = null;
+  function morphTo(targetValues, duration = 700) {
+    const startValues = currentValues.slice();
+    const t0 = performance.now();
+    if (animFrame) cancelAnimationFrame(animFrame);
+    function step(now) {
+      const t = Math.min(1, (now - t0) / duration);
+      const e = ease(t);
+      const interpolated = startValues.map((s, i) => s + (targetValues[i] - s) * e);
+      setShape(interpolated);
+      currentValues = interpolated;
+      if (t < 1) animFrame = requestAnimationFrame(step);
+      else currentValues = targetValues.slice();
+    }
+    animFrame = requestAnimationFrame(step);
+  }
+
+  let profilIdx = 0;
+  let morphTimer = null;
+  function startMorph() {
+    if (morphTimer) return;
+    setShape(PROFILS[0]);
+    morphTimer = setInterval(() => {
+      profilIdx = (profilIdx + 1) % PROFILS.length;
+      morphTo(PROFILS[profilIdx]);
+    }, 1400);
+  }
+  function stopMorph() {
+    if (morphTimer) { clearInterval(morphTimer); morphTimer = null; }
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  }
+
+  // Lancer l'animation après l'apparition initiale du polygone (~1.7s)
+  setTimeout(() => {
+    setShape(PROFILS[0]);
+    startMorph();
+  }, 600);
+
+  // Vérifier si déjà accepté
+  try {
+    if (localStorage.getItem("bdde_welcome_dismissed") === "1") {
+      overlay.classList.add("hidden");
+      stopMorph();
+      return;
+    }
+  } catch (e) {}
+
+  okBtn.addEventListener("click", () => {
+    if (dontShow && dontShow.checked) {
+      try { localStorage.setItem("bdde_welcome_dismissed", "1"); } catch (e) {}
+    }
+    overlay.classList.add("hidden");
+    stopMorph();
+  });
+})();
+
+// ───────────────────── LIENS FOOTER QUI BASCULENT D'ONGLET ─────────────────────
+document.querySelectorAll('[data-go-tab]').forEach(link => {
+  link.addEventListener('click', (ev) => {
+    ev.preventDefault();
+    const tab = link.dataset.goTab;
+    const navLink = document.querySelector(`.nav-link[data-tab="${tab}"]`);
+    if (navLink) {
+      navLink.click();
+    } else {
+      // L'onglet "equipe" n'est pas dans la nav — on bascule manuellement
+      document.querySelectorAll('.tab-content').forEach(tc => {
+        const match = tc.dataset.tabContent === tab;
+        if (match) { tc.removeAttribute('hidden'); tc.style.display = 'block'; }
+        else { tc.setAttribute('hidden', ''); tc.style.display = 'none'; }
+      });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('is-active'));
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+  });
+});
+
+// Hints (boutons exemples)
 document.querySelectorAll('.search-hint').forEach(hint => {
   hint.addEventListener('click', () => {
     const code = hint.dataset.code;
     if (code) {
-      currentCode = code;
-      compareCodes = [];
+      currentCode = code; compareCodes = []; indicatorFilter = null;
       loadAndRender();
       window.scrollTo({ top: document.querySelector(".territory")?.offsetTop || 0, behavior: "smooth" });
     }
   });
 });
 
-// Bouton comparer global
-document.querySelectorAll('.btn-compare-global, .btn-compare-top').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelector('.compare-container')?.scrollIntoView({ behavior: "smooth", block: "center" });
-    setTimeout(() => document.getElementById("compareAddInput")?.focus(), 400);
+// ───────────────────── BOUTONS BANDEAU IDENTITÉ ─────────────────────
+document.getElementById("btnCompareTop")?.addEventListener("click", () => {
+  document.querySelector('.compare-container')?.scrollIntoView({ behavior: "smooth", block: "center" });
+  setTimeout(() => document.getElementById("compareAddInput")?.focus(), 400);
+});
+document.getElementById("btnGouvTop")?.addEventListener("click", () => openGouvDrawer());
+document.getElementById("btnExport")?.addEventListener("click", () => {
+  const data = liveData[currentCode];
+  if (!data) return;
+  // Export JSON simple
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `bdde_${currentCode}_${new Date().toISOString().split("T")[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ───────────────────── FILTRES INDICATEURS (chips dimension) ─────────────────────
+document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('is-active'));
+    chip.classList.add('is-active');
+    indicatorDimFilter = chip.dataset.filter;
+    if (liveData[currentCode]) renderIndicators(liveData[currentCode]);
   });
+});
+
+// ───────────────────── PICKER (drawer choix indicateurs) ─────────────────────
+document.getElementById("btnPickIndicators")?.addEventListener("click", openPicker);
+document.getElementById("pickerClose")?.addEventListener("click", closePicker);
+document.getElementById("pickerCancel")?.addEventListener("click", closePicker);
+document.getElementById("pickerOverlay")?.addEventListener("click", closePicker);
+
+function openPicker() {
+  const data = liveData[currentCode];
+  if (!data) return;
+  const dims = data.indicateurs.dimensions || {};
+  // Si pas de filtre actif, on coche tout au démarrage
+  const allCodes = [];
+  DIM_ORDER.forEach(k => {
+    if (dims[k]?.indicateurs) {
+      dims[k].indicateurs.forEach(ind => allCodes.push(ind.code));
+    }
+  });
+  if (!indicatorFilter) indicatorFilter = [...allCodes];
+
+  const body = document.getElementById("pickerBody");
+  body.innerHTML = DIM_ORDER.map(k => {
+    const d = dims[k];
+    if (!d || !d.indicateurs || d.indicateurs.length === 0) return "";
+    const m = DIM_META[k];
+    return `
+      <div class="picker-group" data-group="${k}">
+        <div class="picker-group-title">
+          <span>${m.label}</span>
+          <button class="picker-group-toggle" data-toggle-group="${k}">Inverser</button>
+        </div>
+        ${d.indicateurs.map(ind => `
+          <label class="picker-item">
+            <input type="checkbox" data-code="${ind.code}" ${indicatorFilter.includes(ind.code) ? 'checked' : ''}>
+            <span class="picker-item-name">${ind.libelle}</span>
+            <span class="picker-item-src">${ind.source || ''}</span>
+          </label>
+        `).join("")}
+      </div>
+    `;
+  }).join("");
+
+  // Bind group toggles
+  body.querySelectorAll(".picker-group-toggle").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const groupK = btn.dataset.toggleGroup;
+      const inputs = body.querySelectorAll(`[data-group="${groupK}"] input[type=checkbox]`);
+      const allChecked = Array.from(inputs).every(i => i.checked);
+      inputs.forEach(i => i.checked = !allChecked);
+      updatePickerCount();
+    });
+  });
+  body.querySelectorAll("input[type=checkbox]").forEach(cb => cb.addEventListener("change", updatePickerCount));
+  updatePickerCount();
+
+  document.getElementById("pickerOverlay").classList.add("on");
+  document.getElementById("pickerDrawer").classList.add("on");
+}
+
+function closePicker() {
+  document.getElementById("pickerOverlay")?.classList.remove("on");
+  document.getElementById("pickerDrawer")?.classList.remove("on");
+}
+
+function updatePickerCount() {
+  const body = document.getElementById("pickerBody");
+  const checked = body.querySelectorAll("input[type=checkbox]:checked").length;
+  const total = body.querySelectorAll("input[type=checkbox]").length;
+  document.getElementById("pickerCount").textContent = `${checked} / ${total} sélectionnés`;
+}
+
+document.getElementById("pickerSelectAll")?.addEventListener("click", () => {
+  document.querySelectorAll("#pickerBody input[type=checkbox]").forEach(cb => cb.checked = true);
+  updatePickerCount();
+});
+document.getElementById("pickerClearAll")?.addEventListener("click", () => {
+  document.querySelectorAll("#pickerBody input[type=checkbox]").forEach(cb => cb.checked = false);
+  updatePickerCount();
+});
+document.getElementById("pickerApply")?.addEventListener("click", () => {
+  const codes = [];
+  document.querySelectorAll("#pickerBody input[type=checkbox]:checked").forEach(cb => codes.push(cb.dataset.code));
+  indicatorFilter = codes;
+  closePicker();
+  if (liveData[currentCode]) renderIndicators(liveData[currentCode]);
 });
 
 // ───────────────────── DRAWER GOUVERNANCE ─────────────────────
@@ -2378,13 +3191,10 @@ async function openGouvDrawer() {
   if (gouvDim?.indicateurs) {
     for (const ind of gouvDim.indicateurs) valeursActuelles[ind.code] = ind;
   }
-
   const sub = document.getElementById("gouvDrawerSub");
   if (sub) sub.innerHTML = `Saisie pour <strong>${data?.territoire?.nom || currentCode}</strong>`;
-
   const body = document.getElementById("gouvDrawerBody");
   if (body) body.innerHTML = def.map(ind => renderGouvField(ind, valeursActuelles[ind.code])).join("");
-
   document.getElementById("gouvOverlay")?.classList.add("on");
   document.getElementById("gouvDrawer")?.classList.add("on");
 }
@@ -2402,7 +3212,6 @@ function renderGouvField(ind, current) {
   const saisieAt = current?.saisie_at || null;
   const remplisseur = current?.remplisseur || "";
   const isFilled = val !== "" && val !== null;
-
   let inputHtml = "";
   if (ind.type === "boolean") {
     const isYes = val === "true" || val === true || val === "1" || val === "oui";
@@ -2418,7 +3227,6 @@ function renderGouvField(ind, current) {
   } else {
     inputHtml = `<input type="text" class="gouv-field-input" data-code="${ind.code}" data-type="text" value="${String(val).replace(/"/g, "&quot;")}">`;
   }
-
   return `
     <div class="gouv-field" data-field="${ind.code}">
       <div class="gouv-field-label">
@@ -2448,7 +3256,6 @@ async function saveGouvAll() {
   const fields = document.querySelectorAll("#gouvDrawerBody .gouv-field");
   let saved = 0, errors = 0;
   if (status) { status.classList.add("on"); status.classList.remove("ok", "err"); status.textContent = "Enregistrement…"; }
-
   for (const fieldEl of fields) {
     const code = fieldEl.dataset.field;
     let valeur = null;
@@ -2483,12 +3290,28 @@ async function saveGouvAll() {
 window.saveGouvAll = saveGouvAll;
 
 document.addEventListener("keydown", (ev) => {
-  if (ev.key === "Escape" && document.getElementById("gouvDrawer")?.classList.contains("on")) closeGouvDrawer();
+  if (ev.key === "Escape") {
+    if (document.getElementById("gouvDrawer")?.classList.contains("on")) closeGouvDrawer();
+    if (document.getElementById("pickerDrawer")?.classList.contains("on")) closePicker();
+  }
 });
 
 // ───────────────────── BOOT ─────────────────────
-loadAndRender();
+(async function boot() {
+  const loader = document.createElement("div");
+  loader.id = "global-loader";
+  loader.style.cssText = "position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#c14a2e,transparent);background-size:200% 100%;animation:loading 1.8s linear infinite;z-index:9999;transition:opacity .4s";
+  document.body.appendChild(loader);
+  const keyframes = document.createElement("style");
+  keyframes.textContent = "@keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}";
+  document.head.appendChild(keyframes);
+  try { await fetch(`${BACKEND}/`, { method: "GET" }); } catch (e) {}
+  await loadAndRender();
+  loader.style.opacity = "0";
+  setTimeout(() => loader.remove(), 500);
+})();
 
 </script>
+
 </body>
 </html>
