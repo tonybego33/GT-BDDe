@@ -18,6 +18,7 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from .config import APP_TITLE, APP_VERSION
@@ -30,7 +31,6 @@ from .services import scoring as scoring_service
 from .services import carto as carto_service
 
 
-# Libellés des 6 dimensions du GT BDDe
 DIMENSIONS_META = {
     "struct": {"libelle": "Structure territoriale", "ordre": 1},
     "access": {"libelle": "Accessibilité et maillage", "ordre": 2},
@@ -57,10 +57,6 @@ def root():
 
 @app.get("/search")
 async def search(q: str = "", limit: int = 10):
-    """
-    Recherche de territoire par nom (autocomplétion).
-    Exemple : /search?q=imp -> Imphy, Impe...
-    """
     if not q or len(q.strip()) < 2:
         return {"results": []}
     try:
@@ -72,7 +68,6 @@ async def search(q: str = "", limit: int = 10):
 
 @app.get("/territoire/{code}")
 async def territoire(code: str):
-    """Résout un code commune (5 chiffres INSEE) ou SIREN EPCI (9 chiffres)."""
     try:
         t = await geo_service.resolve(code)
     except ValueError as e:
@@ -84,7 +79,6 @@ async def territoire(code: str):
 
 @app.get("/indicateurs/def")
 def indicateurs_def():
-    """Renvoie la définition des indicateurs exposés par le service local."""
     return {
         "indicateurs_locaux": local_service.list_indicateurs_def(),
         "indicateurs_filosofi": filosofi_service.list_indicateurs_def(),
@@ -95,13 +89,6 @@ def indicateurs_def():
 
 @app.get("/indicateurs/{code}")
 async def indicateurs(code: str):
-    """
-    Renvoie le diagnostic multicritère pour un territoire, structuré par dimensions.
-
-    Pour les EPCI, les valeurs sont automatiquement agrégées à partir des communes
-    membres (somme pour les stocks/flux, moyenne pondérée par la population pour
-    les ratios/densités).
-    """
     try:
         t = await geo_service.resolve(code)
     except ValueError as e:
@@ -109,22 +96,17 @@ async def indicateurs(code: str):
     except LookupError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-    # Récupération des indicateurs locaux depuis le CSV
     local_indicateurs = local_service.get_indicateurs(t)
     local_error = local_indicateurs.pop("_erreur", None)
 
-    # Récupération des indicateurs BPE (accessibilité)
     bpe_indicateurs = bpe_service.get_indicateurs(t)
     bpe_error = bpe_indicateurs.pop("_erreur", None)
 
-    # Récupération des indicateurs Filosofi (socio-économique)
     filosofi_indicateurs = filosofi_service.get_indicateurs(t)
     filosofi_error = filosofi_indicateurs.pop("_erreur", None)
 
-    # Récupération des indicateurs de gouvernance manuels
     gouv_list = gouv_service.indicateurs_gouvernance(t)
 
-    # Regroupement par dimension
     dimensions = {}
     for dim_code, meta in DIMENSIONS_META.items():
         dimensions[dim_code] = {
@@ -133,34 +115,21 @@ async def indicateurs(code: str):
             "indicateurs": [],
         }
 
-    # Indicateurs locaux
     for ind_code, ind_data in local_indicateurs.items():
         dim = ind_data.get("dimension")
         if dim and dim in dimensions:
-            dimensions[dim]["indicateurs"].append({
-                "code": ind_code,
-                **ind_data,
-            })
+            dimensions[dim]["indicateurs"].append({"code": ind_code, **ind_data})
 
-    # Indicateurs BPE (accessibilité)
     for ind_code, ind_data in bpe_indicateurs.items():
         dim = ind_data.get("dimension")
         if dim and dim in dimensions:
-            dimensions[dim]["indicateurs"].append({
-                "code": ind_code,
-                **ind_data,
-            })
+            dimensions[dim]["indicateurs"].append({"code": ind_code, **ind_data})
 
-    # Indicateurs Filosofi (socio-économique)
     for ind_code, ind_data in filosofi_indicateurs.items():
         dim = ind_data.get("dimension")
         if dim and dim in dimensions:
-            dimensions[dim]["indicateurs"].append({
-                "code": ind_code,
-                **ind_data,
-            })
+            dimensions[dim]["indicateurs"].append({"code": ind_code, **ind_data})
 
-    # Indicateurs gouvernance (manuel)
     for g in gouv_list:
         dimensions["gouv"]["indicateurs"].append({
             "code": g["code"],
@@ -177,7 +146,6 @@ async def indicateurs(code: str):
             "mode": "manuel",
         })
 
-    # Marquer les dimensions encore non branchées
     for dim_code in ["access", "mob"]:
         if not dimensions[dim_code]["indicateurs"]:
             dimensions[dim_code]["statut"] = "a_brancher"
@@ -186,9 +154,7 @@ async def indicateurs(code: str):
                 "mob": "En attente discussion avec Félix Pouchain (outil Mobility).",
             }[dim_code]
 
-    # Calcul du scoring (V1 indicatif, à valider avec Fabien)
     try:
-        # Merger les indicateurs Filosofi avec les locaux pour le scoring
         indicateurs_pour_scoring = {**local_indicateurs, **filosofi_indicateurs}
         scoring = scoring_service.get_scoring_for_territoire(t, indicateurs_pour_scoring, bpe_indicateurs)
         scoring_error = scoring.get("_erreur")
@@ -196,7 +162,6 @@ async def indicateurs(code: str):
         scoring = {}
         scoring_error = str(e)
 
-    # Injecter les scores par indicateur DANS les indicateurs (pour l'affichage frontend)
     if "scores_indicateurs" in scoring:
         scores_ind = scoring["scores_indicateurs"]
         for dim_code, dim in dimensions.items():
@@ -214,7 +179,6 @@ async def indicateurs(code: str):
                     ind["quantiles"] = s["quantiles"]
                     ind["sens"] = s["sens"]
 
-    # Injecter les scores de dimension
     if "scores_dimensions" in scoring:
         for dim_code, score_dim in scoring["scores_dimensions"].items():
             if dim_code in dimensions and score_dim["score"] is not None:
@@ -245,7 +209,6 @@ async def indicateurs(code: str):
     return response
 
 
-# ---------- Gouvernance : saisie manuelle ----------
 class GouvValueIn(BaseModel):
     indicateur_code: str
     valeur: Optional[str] = None
@@ -255,7 +218,6 @@ class GouvValueIn(BaseModel):
 
 @app.post("/gouvernance/{code}")
 async def set_gouv(code: str, payload: GouvValueIn):
-    """Saisie / mise à jour d'une valeur d'indicateur de gouvernance."""
     try:
         t = await geo_service.resolve(code)
     except (ValueError, LookupError) as e:
@@ -276,29 +238,11 @@ async def set_gouv(code: str, payload: GouvValueIn):
 
 @app.get("/gouvernance/indicateurs")
 def list_gouv_indicateurs():
-    """Liste les indicateurs de gouvernance disponibles (définition)."""
     return gouv_service.INDICATEURS_GOUVERNANCE
 
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 
-# À la fin du fichier, après toutes tes routes :
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
-
-@app.get("/app")
-def frontend():
-    return FileResponse("frontend/index.html")
-
-# ---------- Carte : couches BPE, TC, cyclable ----------
 @app.get("/carto/{code}")
 async def carto(code: str, layers: Optional[str] = None):
-    """
-    Renvoie les couches géographiques pour un territoire.
-
-    layers (optionnel) : liste séparée par virgule parmi 'bpe', 'tc', 'velo'
-    Exemple : /carto/241700434?layers=bpe,tc
-    Si omis, renvoie les 3 couches.
-    """
     try:
         t = await geo_service.resolve(code)
     except ValueError as e:
@@ -310,3 +254,8 @@ async def carto(code: str, layers: Optional[str] = None):
     if layers:
         requested = [x.strip() for x in layers.split(",") if x.strip() in ("bpe", "tc", "velo")]
     return carto_service.get_layers_for_territoire(t, requested)
+
+
+@app.get("/app")
+def frontend():
+    return FileResponse("frontend/index.html")
