@@ -279,6 +279,15 @@ def list_gouv_indicateurs():
     """Liste les indicateurs de gouvernance disponibles (définition)."""
     return gouv_service.INDICATEURS_GOUVERNANCE
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# À la fin du fichier, après toutes tes routes :
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+@app.get("/app")
+def frontend():
+    return FileResponse("frontend/index.html")
 
 # ---------- Carte : couches BPE, TC, cyclable ----------
 @app.get("/carto/{code}")

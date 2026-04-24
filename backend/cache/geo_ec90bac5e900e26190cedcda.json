@@ -1,0 +1,1 @@
+{"_t": 1776951678.079439, "_k": "/communes?nom=caen&fields=nom%2Ccode%2CcodeDepartement%2CcodesPostaux%2Cpopulation&boost=population&limit=10", "value": [{"nom": "Caen", "code": "14118", "codeDepartement": "14", "codesPostaux": ["14000"], "population": 109400, "_score": 2.0940000000000003}]}

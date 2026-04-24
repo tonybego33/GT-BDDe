@@ -1,0 +1,1 @@
+{"_t": 1776950664.7894888, "_k": "/epcis?nom=lille&fields=nom%2Ccode%2Ctype%2CpopulationTotale&limit=5", "value": [{"nom": "Métropole Européenne de Lille", "code": "200093201", "type": "METRO", "_score": 0.6479494231755041}]}

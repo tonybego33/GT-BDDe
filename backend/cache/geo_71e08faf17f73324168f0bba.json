@@ -1,0 +1,1 @@
+{"_t": 1776950661.0034473, "_k": "/communes?nom=tourcoi&fields=nom%2Ccode%2CcodeDepartement%2CcodesPostaux%2Cpopulation&boost=population&limit=10", "value": [{"nom": "Tourcoing", "code": "59599", "codeDepartement": "59", "codesPostaux": ["59200"], "population": 98772, "_score": 1.98772}]}

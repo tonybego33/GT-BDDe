@@ -1,0 +1,1 @@
+{"_t": 1776952723.3983705, "_k": "/epcis?nom=bor&fields=nom%2Ccode%2Ctype%2CpopulationTotale&limit=5", "value": [{"nom": "Bordeaux Métropole", "code": "243300316", "type": "METRO", "_score": 0.6472894633217647}, {"nom": "CC les Coteaux Bordelais", "code": "243301355", "type": "CC", "_score": 0.4746340579561501}]}

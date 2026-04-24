@@ -1,0 +1,1 @@
+{"_t": 1776951678.017323, "_k": "/epcis?nom=caen&fields=nom%2Ccode%2Ctype%2CpopulationTotale&limit=5", "value": [{"nom": "CU Caen la Mer", "code": "200065597", "type": "CU", "_score": 0.6683068259694468}]}

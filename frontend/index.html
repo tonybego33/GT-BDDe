@@ -82,12 +82,39 @@ h1.hero-title em{font-style:normal;background:linear-gradient(180deg,transparent
 .btn-compare:hover{background:var(--ink);color:var(--bg-card)}
 .btn-compare.active{background:var(--blue);color:#fff;border-color:var(--blue)}
 .btn-compare.active:hover{background:#264b6e}
-.compare-bar{display:none;margin-top:4px;padding:12px 18px;background:var(--ink);color:var(--bg-card);border-radius:8px;align-items:center;gap:14px;font-size:13px}
+/* Multi-comparaison : pills + autocomplete */
+.compare-bar{display:none;margin-top:4px;padding:12px 18px;background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;align-items:center;gap:14px;font-size:13px;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
+
+/* Autocomplétion de la recherche principale */
+.search-wrap{position:relative;flex:1;max-width:420px;min-width:200px}
+.search-wrap input{width:100%}
+.suggest-list{position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--bg-card);border:1px solid var(--rule);border-radius:6px;box-shadow:var(--shadow-md);max-height:320px;overflow-y:auto;z-index:200;display:none}
+.suggest-list.on{display:block}
+.suggest-item{padding:9px 13px;cursor:pointer;border-bottom:1px solid var(--rule-2);display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13px;transition:background .1s}
+.suggest-item:last-child{border-bottom:none}
+.suggest-item:hover,.suggest-item.active{background:var(--bg-soft)}
+.suggest-name{color:var(--ink);font-weight:500}
+.suggest-meta{font-size:10px;color:var(--ink-3);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.suggest-type{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.04em;margin-right:6px}
+.suggest-type.commune{background:#e8f0f8;color:#2980b9}
+.suggest-type.epci{background:#fdf3ef;color:#b8442e}
+.suggest-empty{padding:12px;text-align:center;color:var(--ink-3);font-size:12px;font-style:italic}
 .compare-bar.on{display:flex}
-.compare-bar .ref{color:var(--blue-soft);font-weight:600}
-.compare-bar select{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);color:#fff;padding:5px 10px;font-size:12px;border-radius:5px;font-family:var(--font-ui);cursor:pointer}
-.compare-bar select option{color:var(--ink);background:var(--bg-card)}
-.compare-bar .close-btn{margin-left:auto;background:transparent;border:none;color:var(--bg-card);cursor:pointer;font-size:14px;opacity:.7}
+.compare-bar-title{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;white-space:nowrap}
+.compare-pills{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px}
+.compare-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;background:var(--bg-soft);border:1px solid var(--rule);border-radius:100px;font-size:12px;font-weight:500;color:var(--ink)}
+.compare-pill .cp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.compare-pill .cp-rm{background:none;border:none;cursor:pointer;color:var(--ink-3);font-size:14px;line-height:1;padding:0 2px;margin-left:2px}
+.compare-pill .cp-rm:hover{color:var(--gauge-low)}
+.compare-pill.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.compare-pill.primary .cp-rm{display:none}
+.compare-add-wrap{position:relative;min-width:220px;flex:1;max-width:320px}
+.compare-add-wrap input{width:100%;padding:7px 11px;border:1px solid var(--rule);background:var(--bg-card);border-radius:5px;font-family:var(--font-mono);font-size:12px;color:var(--ink-2)}
+.compare-add-wrap input:focus{outline:1px solid var(--accent);color:var(--ink)}
+.compare-suggest{position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--bg-card);border:1px solid var(--rule);border-radius:6px;box-shadow:var(--shadow-md);max-height:280px;overflow-y:auto;z-index:200;display:none}
+.compare-suggest.on{display:block}
+.compare-clear-all{background:transparent;border:none;color:var(--ink-3);cursor:pointer;font-size:12px;padding:4px 8px;text-decoration:underline}
+.compare-clear-all:hover{color:var(--gauge-low)}
 
 /* Territory */
 .t-view{margin-top:48px;animation:fadeIn .4s ease}
@@ -147,8 +174,12 @@ h2.t-title strong{font-weight:600}
 .grade-mid::before{background:var(--gauge-mid)}
 .grade-high{background:rgba(88,122,76,.12);color:var(--gauge-high)}
 .grade-high::before{background:var(--gauge-high)}
-.synth-compare{margin-top:14px;padding-top:14px;border-top:1px dashed var(--rule);font-size:13px;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center}
-.synth-compare-val{font-weight:600;color:var(--blue)}
+.synth-compare{margin-top:14px;padding-top:14px;border-top:1px dashed var(--rule);font-size:12px;color:var(--ink-2)}
+.synth-compare-list{display:flex;flex-direction:column;gap:6px}
+.synth-compare-item{display:flex;align-items:center;gap:8px}
+.synth-compare-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.synth-compare-name{flex:1;color:var(--ink-2);font-weight:500}
+.synth-compare-val{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
 
 /* Radar */
 .radar-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:10px;padding:26px 28px 18px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
@@ -205,6 +236,10 @@ h2.t-title strong{font-weight:600}
 .ind-val{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
 .ind-val.na{color:var(--ink-4);font-weight:400;font-style:italic}
 .ind-cmp{display:block;font-size:11px;color:var(--blue);margin-top:2px;font-weight:500}
+.ind-cmp-list{display:flex;flex-direction:column;gap:3px;margin-top:4px;padding:5px 8px;background:var(--bg-soft);border-radius:4px}
+.ind-cmp-item{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2);font-weight:500}
+.ind-cmp-item strong{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
+.ind-cmp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 
 /* Barre de positionnement par indicateur */
 .ind-bar{margin-top:6px;padding:2px 0}
@@ -250,6 +285,46 @@ footer.site-footer{margin-top:60px;padding:28px 0 36px;border-top:1px solid var(
   h2.t-title{font-size:30px}
   footer.site-footer{grid-template-columns:1fr;text-align:center}
 }
+/* === Drawer Gouvernance === */
+.btn-gouv-edit{margin-top:6px;padding:8px 14px;background:var(--bg-soft);border:1px solid var(--rule);color:var(--ink-2);font-family:var(--font-ui);font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;transition:all .15s;width:100%;text-align:center}
+.btn-gouv-edit:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.gouv-overlay{position:fixed;inset:0;background:rgba(20,23,28,.4);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .25s;z-index:1500}
+.gouv-overlay.on{opacity:1;pointer-events:auto}
+.gouv-drawer{position:fixed;top:0;right:0;bottom:0;width:440px;max-width:92vw;background:var(--bg-card);box-shadow:-4px 0 24px rgba(20,23,28,.12);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:1600;display:flex;flex-direction:column;font-family:var(--font-ui)}
+.gouv-drawer.on{transform:translateX(0)}
+.gouv-drawer-head{padding:24px 28px 18px;border-bottom:1px solid var(--rule);position:relative}
+.gouv-drawer-head h3{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.gouv-drawer-head .sub{font-size:12px;color:var(--ink-3);margin-top:4px;line-height:1.4}
+.gouv-drawer-close{position:absolute;top:16px;right:16px;width:32px;height:32px;background:var(--bg-soft);border:1px solid var(--rule);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-size:16px;line-height:1}
+.gouv-drawer-close:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.gouv-drawer-body{flex:1;overflow-y:auto;padding:18px 28px}
+.gouv-field{padding:14px 0;border-bottom:1px dashed var(--rule-2)}
+.gouv-field:last-child{border-bottom:none}
+.gouv-field-label{font-size:13px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.gouv-field-label .saved{font-size:9px;color:var(--gauge-high);font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-family:var(--font-mono)}
+.gouv-field-input{width:100%;padding:8px 11px;border:1px solid var(--rule);border-radius:5px;font-family:var(--font-ui);font-size:13px;background:var(--bg-card);color:var(--ink)}
+.gouv-field-input:focus{outline:1px solid var(--accent);border-color:var(--accent)}
+.gouv-field-bool{display:flex;gap:6px}
+.gouv-field-bool button{flex:1;padding:8px 10px;background:var(--bg-card);border:1px solid var(--rule);border-radius:5px;font-family:var(--font-ui);font-size:12px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:all .15s}
+.gouv-field-bool button:hover{border-color:var(--ink-3)}
+.gouv-field-bool button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.gouv-field-bool button.on.no{background:var(--gauge-low);border-color:var(--gauge-low)}
+.gouv-field-bool button.on.yes{background:var(--gauge-high);border-color:var(--gauge-high)}
+.gouv-field-unit{font-size:11px;color:var(--ink-3);margin-left:8px;font-weight:400}
+.gouv-field-source{margin-top:6px}
+.gouv-field-source input{width:100%;padding:6px 10px;border:1px solid var(--rule-2);border-radius:4px;font-family:var(--font-mono);font-size:11px;background:var(--bg-soft);color:var(--ink-3)}
+.gouv-field-source input:focus{outline:1px solid var(--accent);color:var(--ink-2)}
+.gouv-field-meta{font-size:10px;color:var(--ink-4);margin-top:5px;font-family:var(--font-mono)}
+.gouv-drawer-foot{padding:18px 28px;border-top:1px solid var(--rule);background:var(--bg-soft);display:flex;gap:10px;align-items:center}
+.gouv-drawer-foot .who{flex:1}
+.gouv-drawer-foot input{width:100%;padding:7px 10px;border:1px solid var(--rule);border-radius:5px;font-family:var(--font-ui);font-size:12px}
+.gouv-drawer-foot button{padding:9px 18px;background:var(--ink);color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:600}
+.gouv-drawer-foot button:hover{background:var(--accent)}
+.gouv-drawer-status{padding:8px 16px;font-size:12px;text-align:center;display:none}
+.gouv-drawer-status.on{display:block}
+.gouv-drawer-status.ok{background:rgba(88,122,76,.12);color:var(--gauge-high)}
+.gouv-drawer-status.err{background:rgba(193,75,50,.12);color:var(--gauge-low)}
+@media (max-width:520px){.gouv-drawer{width:100vw;max-width:100vw}}
 </style>
 </head>
 <body>
@@ -304,9 +379,13 @@ footer.site-footer{margin-top:60px;padding:28px 0 36px;border-top:1px solid var(
       </button>
     </div>
     <div class="compare-bar" id="compareBar">
-      <span>Comparaison avec <span class="ref" id="compareRef">–</span></span>
-      <select id="compareSelect"></select>
-      <button class="close-btn" id="closeCompare">✕ Fermer</button>
+      <span class="compare-bar-title">Comparaison</span>
+      <div class="compare-pills" id="comparePills"></div>
+      <div class="compare-add-wrap">
+        <input type="text" id="compareAddInput" placeholder="Ajouter un territoire (nom ou code)…" autocomplete="off">
+        <div class="compare-suggest" id="compareSuggest"></div>
+      </div>
+      <button class="compare-clear-all" id="compareClearAll">Tout effacer</button>
     </div>
   </section>
 
@@ -326,6 +405,24 @@ footer.site-footer{margin-top:60px;padding:28px 0 36px;border-top:1px solid var(
   </footer>
 
 </main>
+
+<!-- Drawer Gouvernance (saisie manuelle) -->
+<div class="gouv-overlay" id="gouvOverlay" onclick="closeGouvDrawer()"></div>
+<aside class="gouv-drawer" id="gouvDrawer" aria-hidden="true">
+  <div class="gouv-drawer-head">
+    <button class="gouv-drawer-close" onclick="closeGouvDrawer()" title="Fermer">✕</button>
+    <h3>Gouvernance — saisie manuelle</h3>
+    <div class="sub" id="gouvDrawerSub">Indicateurs remplis par l'équipe GT BDDe pour ce territoire.</div>
+  </div>
+  <div class="gouv-drawer-status" id="gouvStatus"></div>
+  <div class="gouv-drawer-body" id="gouvDrawerBody">
+    <!-- les champs seront générés dynamiquement -->
+  </div>
+  <div class="gouv-drawer-foot">
+    <div class="who"><input type="text" id="gouvRemplisseur" placeholder="Votre nom (facultatif)"></div>
+    <button onclick="saveGouvAll()">Enregistrer tout</button>
+  </div>
+</aside>
 
 <script>
 // ============================================================
@@ -478,9 +575,13 @@ const DIM_SHORT = {struct:"Structure", access:"Accessibilité", mob:"Mobilité",
 // STATE
 // ============================================================
 let currentCode = "241700434";
-let compareCode = null;
+let compareCodes = [];   // Array de codes de territoires comparés (multi)
 let liveData = {};   // { code: { territoire: {...}, indicateurs: {...} } }
 let mapInstance = null;
+
+// Palette de couleurs pour les territoires comparés (cyclique)
+const COMPARE_COLORS = ["#2f5f8a", "#8a5a2f", "#2f8a5f", "#8a2f5f", "#5f2f8a", "#c09020", "#20a0a0"];
+function colorForCompareIndex(i) { return COMPARE_COLORS[i % COMPARE_COLORS.length]; }
 
 // ============================================================
 // BACKEND CALLS
@@ -582,10 +683,16 @@ function buildDisplayData(code) {
                    : ind.statut === "rempli" ? "live"
                    : ind.statut === "a_remplir" ? "todo"
                    : "todo",
-            // Nouveau : on passe les données de scoring si présentes
+            // Données de scoring (ancien format)
             score: typeof ind.score === 'number' ? ind.score : null,
             quantiles: ind.quantiles || null,
             sens: ind.sens != null ? ind.sens : null,
+            // Nouvelles données : rang percentile dans la typologie et au national
+            rang_typo: typeof ind.rang_typo === 'number' ? ind.rang_typo : null,
+            rang_national: typeof ind.rang_national === 'number' ? ind.rang_national : null,
+            libelle_typo: ind.libelle_typo || null,
+            n_typo: typeof ind.n_typo === 'number' ? ind.n_typo : null,
+            n_national: typeof ind.n_national === 'number' ? ind.n_national : null,
             rawValue: ind.valeur
           }));
           // Score de dimension si présent
@@ -629,7 +736,7 @@ const mapLayers = {
   velo:{layer: null, loaded: false},
 };
 
-async function initMap(container, territory, compare) {
+async function initMap(container, territory, compares) {
   if (mapInstance) { mapInstance.remove(); mapInstance = null; }
   // Reset des couches
   Object.keys(mapLayers).forEach(k => {
@@ -654,13 +761,17 @@ async function initMap(container, territory, compare) {
     return await fetchContourGeo(t.code);
   };
 
+  const comparesArr = Array.isArray(compares) ? compares : (compares ? [compares] : []);
   const primary = await getContour(territory);
-  const cmp = compare ? await getContour(compare) : null;
+  const cmpContours = await Promise.all(comparesArr.map(cc => getContour(cc)));
 
   if (loader.parentNode) loader.parentNode.removeChild(loader);
 
+  const allLayers = [];
+
   if (primary) {
     const pLayer = L.geoJSON(primary, {style:{color:'#b8442e', weight:2, fillColor:'#b8442e', fillOpacity:.14}}).addTo(map);
+    allLayers.push(pLayer);
     try {
       const b = pLayer.getBounds(); const c = b.getCenter();
       L.marker([c.lat, c.lng], {icon: L.divIcon({
@@ -669,12 +780,31 @@ async function initMap(container, territory, compare) {
         iconSize:[0,0]
       })}).addTo(map);
     } catch (e) {}
-    if (cmp) {
-      const cLayer = L.geoJSON(cmp, {style:{color:'#2f5f8a', weight:2, fillColor:'#2f5f8a', fillOpacity:.12, dashArray:'4 3'}}).addTo(map);
-      map.fitBounds(L.featureGroup([pLayer, cLayer]).getBounds(), {padding:[20,20]});
-    } else {
-      map.fitBounds(pLayer.getBounds(), {padding:[25,25]});
-    }
+  }
+
+  cmpContours.forEach((geo, i) => {
+    if (!geo) return;
+    const color = colorForCompareIndex(i);
+    const cc = comparesArr[i];
+    const cLayer = L.geoJSON(geo, {
+      style:{color: color, weight:2, fillColor: color, fillOpacity:.10, dashArray:'4 3'}
+    }).addTo(map);
+    allLayers.push(cLayer);
+    // Petite étiquette au centre
+    try {
+      const b = cLayer.getBounds(); const ctr = b.getCenter();
+      L.marker([ctr.lat, ctr.lng], {icon: L.divIcon({
+        className:'epci-center-marker',
+        html:`<div style="transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center"><div style="background:${color};color:#fff;padding:2px 7px;border-radius:3px;font:600 10px 'Segoe UI',sans-serif;white-space:nowrap;opacity:.92">${cc.nom_live || cc.name}</div></div>`,
+        iconSize:[0,0]
+      })}).addTo(map);
+    } catch (e) {}
+  });
+
+  if (allLayers.length > 0) {
+    try {
+      map.fitBounds(L.featureGroup(allLayers).getBounds(), {padding:[25,25]});
+    } catch (e) { map.setView([46.5, 2.5], 5); }
   } else {
     map.setView([46.5, 2.5], 5);
   }
@@ -771,7 +901,7 @@ function unloadMapLayer(layerKey) {
 // ============================================================
 // RADAR
 // ============================================================
-function renderRadar(territory, compare) {
+function renderRadar(territory, compares) {
   const W = 340, H = 300, cx = W/2, cy = H/2+5, R = 110;
   const rings = [0.2, 0.4, 0.6, 0.8, 1.0];
   const angleFor = i => -Math.PI/2 + i * (2*Math.PI/6);
@@ -790,35 +920,45 @@ function renderRadar(territory, compare) {
       dy: Math.sin(a) > 0.3 ? 8 : (Math.sin(a) < -0.3 ? -2 : 4)
     };
   });
-  const dataPts = DIM_ORDER.map((k,i) => {
+
+  // Helper pour calculer les points d'un polygone à partir d'un territoire
+  const ptsFor = (terr) => DIM_ORDER.map((k, i) => {
     const a = angleFor(i);
-    // Utiliser le score live s'il existe, sinon le démo
-    const score = (typeof territory.dims[k].liveScore === 'number' ? territory.dims[k].liveScore : territory.dims[k].score) || 0;
-    const ratio = score/100;
+    const score = (typeof terr.dims[k].liveScore === 'number' ? terr.dims[k].liveScore : terr.dims[k].score) || 0;
+    const ratio = score / 100;
     return [cx + R*ratio*Math.cos(a), cy + R*ratio*Math.sin(a)];
   });
-  const dataPoly = dataPts.map(p => p.join(",")).join(" ");
-  let cmpPoly = "", cmpDots = "";
-  if (compare) {
-    const cmpPts = DIM_ORDER.map((k,i) => {
-      const a = angleFor(i);
-      const score = (typeof compare.dims[k].liveScore === 'number' ? compare.dims[k].liveScore : compare.dims[k].score) || 0;
-      const ratio = score/100;
-      return [cx + R*ratio*Math.cos(a), cy + R*ratio*Math.sin(a)];
-    });
-    cmpPoly = cmpPts.map(p => p.join(",")).join(" ");
-    cmpDots = cmpPts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#2f5f8a"/>`).join("");
-  }
-  const dataDots = dataPts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#b8442e"/>`).join("");
+  const polyStr = (pts) => pts.map(p => p.join(",")).join(" ");
+  const dotsStr = (pts, color, r) => pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r}" fill="${color}"/>`).join("");
+
+  const dataPts = ptsFor(territory);
+  const comparesArr = Array.isArray(compares) ? compares : (compares ? [compares] : []);
+  // Limite d'affichage : au-delà de 4 polygones c'est bouillie
+  const MAX_RADAR = 4;
+  const shownCompares = comparesArr.slice(0, MAX_RADAR);
+
+  // Polygones des comparés (dessinés AVANT le principal pour qu'il soit au-dessus)
+  const comparePolys = shownCompares.map((cc, i) => {
+    const color = colorForCompareIndex(i);
+    const pts = ptsFor(cc);
+    // Opacité de remplissage décroissante selon le nombre
+    const fillOpacity = Math.max(0.06, 0.14 - 0.02 * shownCompares.length);
+    return `<polygon points="${polyStr(pts)}" fill="${color}" fill-opacity="${fillOpacity}" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  }).join("");
+  const compareDots = shownCompares.map((cc, i) => {
+    const color = colorForCompareIndex(i);
+    return dotsStr(ptsFor(cc), color, 3);
+  }).join("");
 
   return `<svg class="radar-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
     ${ringPolys.map((poly,i) => `<polygon points="${poly}" fill="none" stroke="#e4e1da" stroke-width="${i===4?1.5:1}" ${i<4?'stroke-dasharray="2 3"':''}/>`).join("")}
     ${axes.map(a => `<line x1="${cx}" y1="${cy}" x2="${a.x.toFixed(1)}" y2="${a.y.toFixed(1)}" stroke="#edebe4" stroke-width="1"/>`).join("")}
     <text x="${cx+3}" y="${cy-R*0.5}" font-size="9" fill="#a8adb5">50</text>
     <text x="${cx+3}" y="${cy-R}" font-size="9" fill="#a8adb5">100</text>
-    ${compare ? `<polygon points="${cmpPoly}" fill="var(--radar-compare-fill)" stroke="var(--radar-compare-stroke)" stroke-width="1.5" stroke-dasharray="4 3"/>` : ""}
-    <polygon points="${dataPoly}" fill="var(--radar-fill)" stroke="var(--radar-stroke)" stroke-width="2"/>
-    ${cmpDots}${dataDots}
+    ${comparePolys}
+    <polygon points="${polyStr(dataPts)}" fill="var(--radar-fill)" stroke="var(--radar-stroke)" stroke-width="2"/>
+    ${compareDots}
+    ${dotsStr(dataPts, "#b8442e", 3.5)}
     ${labels.map(l => `<text x="${l.x.toFixed(1)}" y="${l.y.toFixed(1)}" font-size="11" font-weight="600" fill="#3d434d" text-anchor="${l.anchor}" dy="${l.dy}">${l.text}</text>`).join("")}
   </svg>`;
 }
@@ -832,14 +972,20 @@ function renderPills() {
     const b = document.createElement("button");
     b.className = "pill" + (code === currentCode ? " active" : "");
     b.innerHTML = `${t.name}<span class="pill-sub">SIREN ${code}</span>`;
-    b.onclick = () => { currentCode = code; if (compareCode === code) compareCode = null; loadAndRender(); };
+    b.onclick = () => {
+      currentCode = code;
+      compareCodes = compareCodes.filter(c => c !== code);  // retirer de la compare si présent
+      loadAndRender();
+    };
     el.appendChild(b);
   });
 }
 
 function renderTerritory() {
   const t = buildDisplayData(currentCode);
-  const c = compareCode ? buildDisplayData(compareCode) : null;
+  // Construire les données de comparaison pour tous les territoires comparés
+  const cList = compareCodes.map(code => buildDisplayData(code)).filter(Boolean);
+  const c = cList[0] || null;  // compat : "le premier" comparé (utilisé à certains endroits)
   const view = document.getElementById("territoryView");
 
   if (!t) {
@@ -851,18 +997,23 @@ function renderTerritory() {
   const areaBadge = badge(t.superficie_src || "demo");
   const commBadge = badge(t.communes_src || "demo");
 
-  const compareLine = c ? `
+  const compareLine = cList.length > 0 ? `
     <div class="synth-compare">
-      <span>vs. <strong>${c.name}</strong></span>
-      <span class="synth-compare-val">${c.synth.score ?? "?"}/100 · ${c.synth.label}</span>
+      <div class="synth-compare-list">
+        ${cList.map((cc, i) => `
+          <div class="synth-compare-item">
+            <span class="synth-compare-dot" style="background:${colorForCompareIndex(i)}"></span>
+            <span class="synth-compare-name">${cc.nom_live || cc.name}</span>
+            <span class="synth-compare-val">${cc.synth.score ?? "?"}/100</span>
+          </div>`).join("")}
+      </div>
     </div>` : "";
 
-  const radarLegend = c ? `
+  const radarLegend = `
     <div class="radar-legend">
-      <span><span class="dot ref"></span>${t.name}</span>
-      <span><span class="dot cmp"></span>${c.name}</span>
-    </div>` : `
-    <div class="radar-legend"><span><span class="dot ref"></span>${t.name}</span></div>`;
+      <span><span class="dot ref"></span>${t.nom_live || t.name}</span>
+      ${cList.map((cc, i) => `<span><span class="dot" style="background:${colorForCompareIndex(i)}"></span>${cc.nom_live || cc.name}</span>`).join("")}
+    </div>`;
 
   view.innerHTML = `
     <div class="t-view">
@@ -942,26 +1093,35 @@ function renderTerritory() {
           <div class="meta">${DIM_ORDER.length} dimensions</div>
         </div>
         <div class="dims">
-          ${DIM_ORDER.map(k => renderDim(k, t.dims[k], c ? c.dims[k] : null, c)).join("")}
+          ${DIM_ORDER.map(k => renderDim(k, t.dims[k], cList.map(cc => cc.dims[k]), cList)).join("")}
         </div>
       </div>
     </div>`;
 
-  document.getElementById("radarWrap").innerHTML = renderRadar(t, c);
+  document.getElementById("radarWrap").innerHTML = renderRadar(t, cList);
   const mapEl = document.getElementById("territoryMap");
-  if (mapEl) initMap(mapEl, t, c);
+  if (mapEl) initMap(mapEl, t, cList);
 }
 
-function renderDim(key, dim, cmpDim, cmpT) {
+function renderDim(key, dim, cmpDims, cmpTerritories) {
   const meta = DIM_META[key];
   // Préférer le score live s'il est dispo, sinon le démo
   const score = typeof dim.liveScore === 'number' ? Math.round(dim.liveScore) : dim.score;
   const isLiveScore = typeof dim.liveScore === 'number';
-  // Si on a des indicateurs live mais pas de score agrégé, on est quand même en mode "live partiel"
   const hasLiveInds = Array.isArray(dim.indicators) && dim.indicators.some(i => i.status === 'live');
   const scoreLabel = isLiveScore ? 'Score' : (hasLiveInds ? 'Score' : 'Score démo');
   const grade = score != null ? gradeFromScore(score) : "mid";
-  const cmpMarker = cmpDim && cmpDim.score != null ? `<div class="gauge-marker-cmp" style="left:${cmpDim.score}%"></div>` : "";
+
+  const cmpDimsArr = Array.isArray(cmpDims) ? cmpDims : (cmpDims ? [cmpDims] : []);
+  const cmpTsArr = Array.isArray(cmpTerritories) ? cmpTerritories : (cmpTerritories ? [cmpTerritories] : []);
+
+  // Marqueurs de comparaison sur la jauge : un trait vertical par territoire comparé
+  const cmpMarkers = cmpDimsArr.map((cd, i) => {
+    const cScore = typeof cd.liveScore === 'number' ? cd.liveScore : cd.score;
+    if (cScore == null) return '';
+    return `<div class="gauge-marker-cmp" style="left:${cScore}%;background:${colorForCompareIndex(i)}" title="${(cmpTsArr[i]?.nom_live || cmpTsArr[i]?.name || '')} : ${Math.round(cScore)}"></div>`;
+  }).join("");
+
   return `
     <div class="dim grade-${grade}">
       <div class="dim-head">
@@ -973,26 +1133,45 @@ function renderDim(key, dim, cmpDim, cmpT) {
       </div>
       <h4>${meta.label}</h4>
       <div class="dim-synth">${meta.synth}</div>
+      ${key === 'gouv' ? `<button class="btn-gouv-edit" onclick="openGouvDrawer()">✏️ Saisir / mettre à jour</button>` : ''}
       <div class="gauge">
         <div class="gauge-track">
           <div class="gauge-fill ${grade}" style="width:${score || 0}%"></div>
-          ${cmpMarker}
+          ${cmpMarkers}
         </div>
         <div class="gauge-scale"><span>0</span><span>50</span><span>100</span></div>
       </div>
       <div class="dim-indicators">
         ${dim.indicators.map((ind, i) => {
-          const cmpInd = cmpDim && cmpDim.indicators ? cmpDim.indicators[i] : null;
-          // Barre de positionnement par rapport aux quantiles si dispo
-          const posBar = (typeof ind.score === 'number') ? renderIndBar(ind) : '';
+          // Chercher l'équivalent pour chaque territoire comparé (même index)
+          const cmpValues = cmpDimsArr.map((cd, ci) => {
+            const cInd = cd.indicators ? cd.indicators[i] : null;
+            if (!cInd || cInd.val === '—' || cInd.val === 'À remplir') return null;
+            return {
+              val: cInd.val,
+              name: cmpTsArr[ci]?.nom_live || cmpTsArr[ci]?.name || '',
+              color: colorForCompareIndex(ci),
+            };
+          }).filter(Boolean);
+
+          const posBar = (typeof ind.rang_typo === 'number' || typeof ind.rang_national === 'number') ? renderIndBar(ind) : '';
+          const cmpLines = cmpValues.length > 0 ? `
+            <div class="ind-cmp-list">
+              ${cmpValues.map(cv => `
+                <span class="ind-cmp-item">
+                  <span class="ind-cmp-dot" style="background:${cv.color}"></span>
+                  ${cv.name.length > 20 ? cv.name.substring(0, 20) + '…' : cv.name} · <strong>${cv.val}</strong>
+                </span>
+              `).join("")}
+            </div>` : '';
           return `<div class="ind">
             <div class="ind-header">
               <div class="ind-label">${ind.label} ${badge(ind.status || 'todo')}</div>
               <div class="ind-val-wrap">
                 <span class="ind-val ${ind.val === 'À remplir' || ind.val === '—' ? 'na' : ''}">${ind.val}</span>
-                ${cmpInd ? `<span class="ind-cmp">${(cmpT.nom_live || cmpT.name).split(' ')[0]} · ${cmpInd.val}</span>` : ""}
               </div>
             </div>
+            ${cmpLines}
             ${posBar}
             <span class="ind-src">${ind.src}</span>
           </div>`;
@@ -1002,9 +1181,9 @@ function renderDim(key, dim, cmpDim, cmpT) {
 }
 
 // Rend 2 mini-barres de positionnement :
-//  - rang au sein de sa typologie
-//  - rang au niveau national
-// Affiche le rang brut (% de communes ayant une valeur inférieure), sans jugement.
+//  - rang au sein de sa typologie (communes de même catégorie INSEE)
+//  - rang au niveau national (toutes communes)
+// Affichage neutre : rang brut, sans jugement bon/mauvais.
 function renderIndBar(ind) {
   const rT = (typeof ind.rang_typo === 'number') ? ind.rang_typo : null;
   const rN = (typeof ind.rang_national === 'number') ? ind.rang_national : null;
@@ -1043,44 +1222,178 @@ function renderIndBar(ind) {
 function renderCompareControls() {
   const bar = document.getElementById("compareBar");
   const btn = document.getElementById("compareBtn");
-  const sel = document.getElementById("compareSelect");
-  const ref = document.getElementById("compareRef");
-  sel.innerHTML = `<option value="">Choisir un territoire…</option>` +
-    Object.entries(TERRITORIES_DEMO).filter(([k]) => k !== currentCode)
-      .map(([k,t]) => `<option value="${k}" ${k === compareCode ? "selected" : ""}>${t.name}</option>`).join("");
-  if (compareCode) {
-    bar.classList.add("on"); btn.classList.add("active");
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg> Comparaison active`;
-    ref.textContent = TERRITORIES_DEMO[compareCode] ? TERRITORIES_DEMO[compareCode].name : compareCode;
+  const pillsEl = document.getElementById("comparePills");
+  const addInput = document.getElementById("compareAddInput");
+  const suggestEl = document.getElementById("compareSuggest");
+  const clearAllBtn = document.getElementById("compareClearAll");
+
+  // Le territoire principal apparait en tête (pill noire, non-supprimable)
+  const primary = buildDisplayData(currentCode);
+  const primaryName = (primary?.nom_live || primary?.name || currentCode);
+
+  const pillsHtml = [
+    `<span class="compare-pill primary">
+      <span class="cp-dot" style="background:#b8442e"></span>
+      ${primaryName}
+    </span>`,
+    ...compareCodes.map((code, i) => {
+      const d = buildDisplayData(code);
+      const name = d?.nom_live || d?.name || code;
+      return `<span class="compare-pill">
+        <span class="cp-dot" style="background:${colorForCompareIndex(i)}"></span>
+        ${name}
+        <button class="cp-rm" onclick="removeCompare('${code}')" title="Retirer">✕</button>
+      </span>`;
+    }),
+  ].join("");
+  pillsEl.innerHTML = pillsHtml;
+
+  // Afficher la barre dès qu'on a au moins un comparé OU si le bouton est activé
+  if (compareCodes.length > 0) {
+    bar.classList.add("on");
+    btn.classList.add("active");
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10M7 12h10M7 17h10"/></svg> ${compareCodes.length} comparé${compareCodes.length > 1 ? 's' : ''}`;
   } else {
-    bar.classList.remove("on"); btn.classList.remove("active");
+    bar.classList.remove("on");
+    btn.classList.remove("active");
     btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10M7 12h10M7 17h10"/></svg> Comparer`;
-    ref.textContent = "–";
   }
+
   btn.onclick = () => {
-    if (compareCode) compareCode = null;
-    else {
-      const others = Object.keys(TERRITORIES_DEMO).filter(k => k !== currentCode);
-      compareCode = others[0];
+    if (compareCodes.length > 0) {
+      // Déjà des comparés : tout vider
+      compareCodes = [];
+      loadAndRender();
+    } else {
+      // Ouvrir la barre pour que l'utilisateur cherche
+      bar.classList.add("on");
+      btn.classList.add("active");
+      setTimeout(() => addInput?.focus(), 100);
     }
+  };
+
+  clearAllBtn.onclick = () => { compareCodes = []; loadAndRender(); };
+
+  // Autocomplete d'ajout
+  bindCompareAutocomplete(addInput, suggestEl);
+}
+
+function removeCompare(code) {
+  compareCodes = compareCodes.filter(c => c !== code);
+  loadAndRender();
+}
+
+function bindCompareAutocomplete(input, list) {
+  if (!input || !list || input._bound) return;
+  input._bound = true;
+
+  let timer = null;
+  let items = [];
+  let activeIdx = -1;
+
+  const hide = () => { list.classList.remove("on"); list.innerHTML = ""; activeIdx = -1; items = []; };
+
+  const render = (results) => {
+    items = results; activeIdx = -1;
+    if (!results.length) {
+      list.innerHTML = '<div class="suggest-empty">Aucun résultat</div>';
+      list.classList.add("on");
+      return;
+    }
+    list.innerHTML = results.map((it, i) => `
+      <div class="suggest-item" data-idx="${i}">
+        <div>
+          <span class="suggest-type ${it.type}">${it.type}</span>
+          <span class="suggest-name">${it.libelle}</span>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:2px">${it.sublibelle}</div>
+        </div>
+        <div class="suggest-meta">${it.code}</div>
+      </div>`).join("");
+    list.classList.add("on");
+    list.querySelectorAll(".suggest-item").forEach(el => {
+      el.addEventListener("mousedown", (ev) => {
+        ev.preventDefault();
+        pick(items[parseInt(el.dataset.idx)]);
+      });
+    });
+  };
+
+  const pick = (item) => {
+    if (!item) return;
+    // Pas d'ajout si c'est le primaire ou déjà comparé
+    if (item.code === currentCode) {
+      input.value = "";
+      hide();
+      return;
+    }
+    if (compareCodes.includes(item.code)) {
+      input.value = "";
+      hide();
+      return;
+    }
+    compareCodes.push(item.code);
+    input.value = "";
+    hide();
     loadAndRender();
   };
-  sel.onchange = e => { compareCode = e.target.value || null; loadAndRender(); };
-  document.getElementById("closeCompare").onclick = () => { compareCode = null; loadAndRender(); };
+
+  const doSearch = async (q) => {
+    if (!BACKEND) return;
+    try {
+      const r = await fetch(`${BACKEND}/search?q=${encodeURIComponent(q)}&limit=10`);
+      if (!r.ok) return hide();
+      const d = await r.json();
+      // Filtrer le primaire et ceux déjà comparés
+      const filtered = (d.results || []).filter(it => it.code !== currentCode && !compareCodes.includes(it.code));
+      render(filtered);
+    } catch (e) { hide(); }
+  };
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim();
+    if (/^\d{5}$/.test(q) || /^\d{9}$/.test(q)) {
+      // On peut ajouter directement un code
+      if (q !== currentCode && !compareCodes.includes(q)) {
+        compareCodes.push(q);
+        input.value = "";
+        hide();
+        loadAndRender();
+        return;
+      }
+    }
+    if (q.length < 2) return hide();
+    clearTimeout(timer);
+    timer = setTimeout(() => doSearch(q), 220);
+  });
+
+  input.addEventListener("keydown", (ev) => {
+    if (!list.classList.contains("on") || !items.length) return;
+    if (ev.key === "ArrowDown") { ev.preventDefault(); activeIdx = Math.min(activeIdx + 1, items.length - 1); updateActive(); }
+    else if (ev.key === "ArrowUp") { ev.preventDefault(); activeIdx = Math.max(activeIdx - 1, 0); updateActive(); }
+    else if (ev.key === "Enter" && activeIdx >= 0) { ev.preventDefault(); pick(items[activeIdx]); }
+    else if (ev.key === "Escape") { hide(); }
+  });
+
+  const updateActive = () => {
+    list.querySelectorAll(".suggest-item").forEach((el, i) => el.classList.toggle("active", i === activeIdx));
+  };
+
+  document.addEventListener("click", (ev) => {
+    if (ev.target !== input && !list.contains(ev.target)) hide();
+  });
 }
 
 // ============================================================
 // MAIN
 // ============================================================
 async function loadAndRender() {
-  // Charger les données live pour currentCode et compareCode si backend dispo
+  // Charger les données live pour currentCode et tous les comparés
   if (BACKEND) {
-    const codes = [currentCode, compareCode].filter(Boolean);
+    const codes = [currentCode, ...compareCodes];
     for (const code of codes) {
       if (!liveData[code]) {
         const d = await fetchTerritoire(code);
         if (d) {
-          // Aussi récupérer la réponse complète du /territoire pour contour + type_epci
           try {
             const r = await fetch(`${BACKEND}/territoire/${code}`);
             if (r.ok) d.full = await r.json();
@@ -1104,33 +1417,211 @@ function renderAll() {
 // ============================================================
 document.getElementById("btnLoadLibre").onclick = () => {
   const code = document.getElementById("codeLibre").value.trim();
-  if (code) { currentCode = code; compareCode = null; loadAndRender(); }
+  if (code) { currentCode = code; compareCodes = []; loadAndRender(); }
 };
 document.getElementById("codeLibre").addEventListener("keydown", e => {
   if (e.key === "Enter") document.getElementById("btnLoadLibre").click();
 });
 
 // ============================================================
-// AUTOCOMPLÉTION
+// DRAWER GOUVERNANCE — saisie manuelle des 7 indicateurs
 // ============================================================
-(function () {
+let GOUV_INDICATEURS_DEF = null;  // chargé une fois depuis /gouvernance/indicateurs
+
+async function loadGouvDef() {
+  if (GOUV_INDICATEURS_DEF) return GOUV_INDICATEURS_DEF;
+  if (!BACKEND) return [];
+  try {
+    const r = await fetch(`${BACKEND}/gouvernance/indicateurs`);
+    if (r.ok) GOUV_INDICATEURS_DEF = await r.json();
+  } catch (e) { console.warn("Impossible de charger les indicateurs gouv", e); }
+  return GOUV_INDICATEURS_DEF || [];
+}
+
+async function openGouvDrawer() {
+  if (!BACKEND) {
+    alert("Backend non configuré. Renseigne l'URL en haut de page.");
+    return;
+  }
+  const def = await loadGouvDef();
+  const t = buildDisplayData(currentCode);
+  const live = liveData[currentCode];
+  // Récupérer les valeurs déjà saisies depuis l'objet indicateurs gouv
+  const valeursActuelles = {};
+  if (live && live.indicateurs && live.indicateurs.dimensions && live.indicateurs.dimensions.gouv) {
+    for (const ind of live.indicateurs.dimensions.gouv.indicateurs || []) {
+      valeursActuelles[ind.code] = ind;
+    }
+  }
+
+  const sub = document.getElementById("gouvDrawerSub");
+  sub.innerHTML = `Saisie pour <strong>${t.nom_live || t.name}</strong> · ${t.code || currentCode}`;
+
+  const body = document.getElementById("gouvDrawerBody");
+  body.innerHTML = def.map(ind => renderGouvField(ind, valeursActuelles[ind.code])).join("");
+
+  document.getElementById("gouvOverlay").classList.add("on");
+  document.getElementById("gouvDrawer").classList.add("on");
+  document.getElementById("gouvDrawer").setAttribute("aria-hidden", "false");
+}
+
+function closeGouvDrawer() {
+  document.getElementById("gouvOverlay").classList.remove("on");
+  document.getElementById("gouvDrawer").classList.remove("on");
+  document.getElementById("gouvDrawer").setAttribute("aria-hidden", "true");
+  setTimeout(() => {
+    const s = document.getElementById("gouvStatus");
+    s.classList.remove("on", "ok", "err");
+  }, 300);
+}
+
+function renderGouvField(ind, current) {
+  const code = ind.code;
+  const val = current && current.valeur != null ? current.valeur : "";
+  const sourceUrl = current && current.source_url ? current.source_url : "";
+  const remplisseur = current && current.remplisseur ? current.remplisseur : "";
+  const saisieAt = current && current.saisie_at ? current.saisie_at : null;
+  const isFilled = val !== "" && val !== null;
+
+  // Construire le bon input selon le type
+  let inputHtml = "";
+  if (ind.type === "boolean") {
+    const isYes = val === "true" || val === true || val === "1" || val === "oui";
+    const isNo = val === "false" || val === false || val === "0" || val === "non";
+    inputHtml = `
+      <div class="gouv-field-bool" data-code="${code}" data-type="boolean">
+        <button type="button" data-val="true"  class="${isYes ? 'on yes' : ''}" onclick="toggleGouvBool(this)">Oui</button>
+        <button type="button" data-val="false" class="${isNo  ? 'on no'  : ''}" onclick="toggleGouvBool(this)">Non</button>
+      </div>`;
+  } else if (ind.type === "number") {
+    inputHtml = `<input type="number" step="any" class="gouv-field-input" data-code="${code}" data-type="number" value="${val}" placeholder="0">`;
+  } else if (ind.type === "date") {
+    inputHtml = `<input type="number" min="1900" max="2100" step="1" class="gouv-field-input" data-code="${code}" data-type="date" value="${val}" placeholder="ex: 2021">`;
+  } else {
+    inputHtml = `<input type="text" class="gouv-field-input" data-code="${code}" data-type="text" value="${val.replace(/"/g, "&quot;")}" placeholder="">`;
+  }
+
+  // Source URL
+  const sourceHtml = `
+    <div class="gouv-field-source">
+      <input type="url" placeholder="Source / URL (facultatif)" data-source-for="${code}" value="${sourceUrl.replace(/"/g, "&quot;")}">
+    </div>`;
+
+  // Méta saisie
+  const metaHtml = saisieAt ? `
+    <div class="gouv-field-meta">Dernière saisie : ${saisieAt.split("T")[0]}${remplisseur ? ` · par ${remplisseur}` : ""}</div>
+  ` : "";
+
+  return `
+    <div class="gouv-field" data-field="${code}">
+      <div class="gouv-field-label">
+        <span>${ind.libelle}${ind.unite ? ` <span class="gouv-field-unit">(${ind.unite})</span>` : ""}</span>
+        ${isFilled ? '<span class="saved">✓ Rempli</span>' : ''}
+      </div>
+      ${inputHtml}
+      ${sourceHtml}
+      ${metaHtml}
+    </div>`;
+}
+
+function toggleGouvBool(btn) {
+  const wrapper = btn.parentElement;
+  const wasOn = btn.classList.contains("on");
+  // Reset les 2 boutons
+  wrapper.querySelectorAll("button").forEach(b => b.classList.remove("on", "yes", "no"));
+  // Si on cliquait sur celui qui était déjà actif, on désélectionne tout
+  if (!wasOn) {
+    btn.classList.add("on", btn.dataset.val === "true" ? "yes" : "no");
+  }
+}
+
+async function saveGouvAll() {
+  const status = document.getElementById("gouvStatus");
+  const remplisseur = document.getElementById("gouvRemplisseur").value.trim() || null;
+  const fields = document.querySelectorAll("#gouvDrawerBody .gouv-field");
+
+  let saved = 0, errors = 0;
+  status.classList.remove("ok", "err");
+  status.classList.add("on");
+  status.textContent = "Enregistrement…";
+
+  for (const fieldEl of fields) {
+    const code = fieldEl.dataset.field;
+
+    // Récupérer la valeur selon le type
+    let valeur = null;
+    const boolWrap = fieldEl.querySelector(".gouv-field-bool");
+    if (boolWrap) {
+      const onBtn = boolWrap.querySelector("button.on");
+      valeur = onBtn ? onBtn.dataset.val : null;
+    } else {
+      const inp = fieldEl.querySelector(".gouv-field-input");
+      if (inp) valeur = inp.value.trim() || null;
+    }
+
+    const sourceInp = fieldEl.querySelector("[data-source-for]");
+    const sourceUrl = sourceInp ? (sourceInp.value.trim() || null) : null;
+
+    // Si la valeur est vide ET pas de source, on saute (pas la peine de POSTer du vide)
+    if (valeur === null && !sourceUrl) continue;
+
+    try {
+      const r = await fetch(`${BACKEND}/gouvernance/${currentCode}`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          indicateur_code: code,
+          valeur: valeur,
+          source_url: sourceUrl,
+          remplisseur: remplisseur,
+        }),
+      });
+      if (r.ok) saved++; else errors++;
+    } catch (e) {
+      console.error("save", code, e);
+      errors++;
+    }
+  }
+
+  if (errors === 0) {
+    status.classList.add("ok");
+    status.textContent = saved > 0 ? `✓ ${saved} indicateur(s) enregistré(s)` : "Rien à enregistrer";
+  } else {
+    status.classList.add("err");
+    status.textContent = `${saved} OK · ${errors} erreur(s)`;
+  }
+
+  // Recharger les données live et le rendu
+  delete liveData[currentCode];
+  await loadAndRender();
+  // Garder le drawer ouvert mais avec les valeurs fraîches
+  setTimeout(() => openGouvDrawer(), 100);
+}
+
+// Fermer drawer avec Echap
+document.addEventListener("keydown", (ev) => {
+  if (ev.key === "Escape" && document.getElementById("gouvDrawer").classList.contains("on")) {
+    closeGouvDrawer();
+  }
+});
+
+// ============================================================
+// AUTOCOMPLÉTION barre de recherche principale
+// ============================================================
+(function(){
   const input = document.getElementById("codeLibre");
-  const list  = document.getElementById("suggestList");
-  const btn   = document.getElementById("btnLoadLibre");
+  const list = document.getElementById("suggestList");
+  const btn = document.getElementById("btnLoadLibre");
   if (!input || !list) return;
 
-  let timer = null;
-  let items = [];
-  let activeIdx = -1;
+  let timer = null, items = [], activeIdx = -1;
+  const hide = () => { list.classList.remove("on"); list.innerHTML = ""; activeIdx = -1; items = []; };
 
-  function hide() { list.classList.remove("on"); list.innerHTML = ""; activeIdx = -1; items = []; }
-
-  function render(results) {
+  const render = (results) => {
     items = results; activeIdx = -1;
     if (!results.length) {
       list.innerHTML = '<div class="suggest-empty">Aucun résultat</div>';
-      list.classList.add("on");
-      return;
+      list.classList.add("on"); return;
     }
     list.innerHTML = results.map((it, i) => `
       <div class="suggest-item" data-idx="${i}">
@@ -1142,62 +1633,44 @@ document.getElementById("codeLibre").addEventListener("keydown", e => {
         <div class="suggest-meta">${it.code}</div>
       </div>`).join("");
     list.classList.add("on");
-
     list.querySelectorAll(".suggest-item").forEach(el => {
       el.addEventListener("mousedown", (ev) => {
         ev.preventDefault();
         pick(items[parseInt(el.dataset.idx)]);
       });
     });
-  }
+  };
 
-  function pick(item) {
+  const pick = (item) => {
+    if (!item) return;
     input.value = item.code;
     hide();
-    if (btn) btn.click();  // réutilise la logique de chargement existante
-  }
-
-  function updateActive() {
-    list.querySelectorAll(".suggest-item").forEach((el, i) => {
-      el.classList.toggle("active", i === activeIdx);
-    });
-  }
-
-  async function doSearch(q) {
-    if (!BACKEND) return;
-    try {
-      const r = await fetch(`${BACKEND}/search?q=${encodeURIComponent(q)}&limit=10`);
-      if (!r.ok) return hide();
-      const d = await r.json();
-      render(d.results || []);
-    } catch (e) { hide(); }
-  }
+    if (btn) btn.click();
+  };
 
   input.addEventListener("input", () => {
     const q = input.value.trim();
-    // déjà un code : on laisse passer sans autocomplétion
     if (/^\d{5}$/.test(q) || /^\d{9}$/.test(q) || /^\d[\dAB]\d{3}$/i.test(q)) return hide();
     if (q.length < 2) return hide();
     clearTimeout(timer);
-    timer = setTimeout(() => doSearch(q), 220);
+    timer = setTimeout(async () => {
+      if (!BACKEND) return;
+      try {
+        const r = await fetch(`${BACKEND}/search?q=${encodeURIComponent(q)}&limit=10`);
+        if (!r.ok) return hide();
+        const d = await r.json();
+        render(d.results || []);
+      } catch (e) { hide(); }
+    }, 220);
   });
 
   input.addEventListener("keydown", (ev) => {
     if (!list.classList.contains("on") || !items.length) return;
-    if (ev.key === "ArrowDown") {
-      ev.preventDefault();
-      activeIdx = Math.min(activeIdx + 1, items.length - 1);
-      updateActive();
-    } else if (ev.key === "ArrowUp") {
-      ev.preventDefault();
-      activeIdx = Math.max(activeIdx - 1, 0);
-      updateActive();
-    } else if (ev.key === "Enter" && activeIdx >= 0) {
-      ev.preventDefault();
-      pick(items[activeIdx]);
-    } else if (ev.key === "Escape") {
-      hide();
-    }
+    if (ev.key === "ArrowDown") { ev.preventDefault(); activeIdx = Math.min(activeIdx + 1, items.length - 1); }
+    else if (ev.key === "ArrowUp") { ev.preventDefault(); activeIdx = Math.max(activeIdx - 1, 0); }
+    else if (ev.key === "Enter" && activeIdx >= 0) { ev.preventDefault(); pick(items[activeIdx]); return; }
+    else if (ev.key === "Escape") { hide(); return; }
+    list.querySelectorAll(".suggest-item").forEach((el, i) => el.classList.toggle("active", i === activeIdx));
   });
 
   document.addEventListener("click", (ev) => {

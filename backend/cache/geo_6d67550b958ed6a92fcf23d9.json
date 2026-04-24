@@ -1,0 +1,1 @@
+{"_t": 1776952855.1083276, "_k": "/communes?nom=grenoble&fields=nom%2Ccode%2CcodeDepartement%2CcodesPostaux%2Cpopulation&boost=population&limit=10", "value": [{"nom": "Grenoble", "code": "38185", "codeDepartement": "38", "codesPostaux": ["38000", "38100"], "population": 156140, "_score": 2.5614}]}

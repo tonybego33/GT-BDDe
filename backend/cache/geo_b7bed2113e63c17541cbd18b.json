@@ -1,0 +1,1 @@
+{"_t": 1776950812.1844404, "_k": "/communes?nom=roubai&fields=nom%2Ccode%2CcodeDepartement%2CcodesPostaux%2Cpopulation&boost=population&limit=10", "value": [{"nom": "Roubaix", "code": "59512", "codeDepartement": "59", "codesPostaux": ["59100"], "population": 98286, "_score": 1.98286}]}

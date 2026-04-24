@@ -1,0 +1,1 @@
+{"_t": 1776952724.130277, "_k": "/epcis?nom=bordeaux&fields=nom%2Ccode%2Ctype%2CpopulationTotale&limit=5", "value": [{"nom": "Bordeaux Métropole", "code": "243300316", "type": "METRO", "_score": 0.8700791205845464}]}
